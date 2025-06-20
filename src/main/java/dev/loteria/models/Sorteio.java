@@ -73,4 +73,14 @@ public class Sorteio {
 
     return ThreadLocalRandom.current().nextInt(min, max + 1);
   }
+
+  @Override
+  public String toString() {
+    return "Sorteio{" +
+        "id=" + id +
+        ", numerosSorteados=" + numerosSorteados +
+        ", modalidade=" + (modalidade != null ? modalidade.getNome() : "null") +
+        ", horario=" + horario +
+        '}';
+  }
 }
