@@ -1,6 +1,6 @@
 package dev.loteria.ui;
 
-import dev.loteria.database.Loteria;
+import dev.loteria.Loteria;
 import dev.loteria.services.ModalidadeService;
 
 public class MenuModalidades extends Menu {
@@ -27,7 +27,7 @@ public class MenuModalidades extends Menu {
     switch (opcao) {
       case 1 -> servico.listar();
       case 2 -> servico.inserir();
-      case 3 -> servico.atualizar();
+      case 3 -> servico.editar();
       case 4 -> servico.deletar();
       case 0 -> Loteria.getMenuPrincipal().init();
     }

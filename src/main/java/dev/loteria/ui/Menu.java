@@ -1,7 +1,7 @@
 package dev.loteria.ui;
 
 import java.util.InputMismatchException;
-import dev.loteria.database.Loteria;
+import dev.loteria.Loteria;
 import dev.loteria.interfaces.Servico;
 
 public abstract class Menu {

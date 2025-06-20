@@ -1,23 +1,27 @@
 package dev.loteria.models;
 
+import dev.loteria.interfaces.Modelo;
+
 /**
  * Representa uma modalidade de loteria.
  * 
  * @author Kevin Villanova
  */
-public class Modalidade {
+public class Modalidade implements Modelo {
   private int id;
   private String nome;
   private int numerosSorteio;
   private int menorBola;
   private int maiorBola;
   private String descricao;
+  private double valorJogo;
 
-  public Modalidade(String nome, int numerosSorteio, int menorBola, int maiorBola, String descricao) {
+  public Modalidade(String nome, int numerosSorteio, int menorBola, int maiorBola, double valorJogo, String descricao) {
     this.nome = nome;
     this.numerosSorteio = numerosSorteio;
     this.menorBola = menorBola;
     this.maiorBola = maiorBola;
+    this.valorJogo = valorJogo;
     this.descricao = descricao;
   }
 
@@ -61,6 +65,14 @@ public class Modalidade {
     this.maiorBola = maiorBola;
   }
 
+  public double getValorJogo() {
+    return valorJogo;
+  }
+
+  public void setValorJogo(double valorJogo) {
+    this.valorJogo = valorJogo;
+  }
+
   public String getDescricao() {
     return descricao;
   }
@@ -77,6 +89,7 @@ public class Modalidade {
         ", numerosSorteio=" + numerosSorteio +
         ", menorBola=" + menorBola +
         ", maiorBola=" + maiorBola +
+        ", valorJogo=" + valorJogo +
         ", descricao='" + descricao + '\'' +
         '}';
   }

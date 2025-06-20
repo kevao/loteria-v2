@@ -1,11 +1,12 @@
 package dev.loteria.interfaces;
 
 public interface Servico {
-  public void inserir();
 
   public void listar();
 
-  public void atualizar();
+  public void inserir();
+
+  public void editar();
 
   public void deletar();
 

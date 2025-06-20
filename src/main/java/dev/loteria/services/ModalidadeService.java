@@ -1,19 +1,25 @@
 package dev.loteria.services;
 
-import dev.loteria.database.Loteria;
+import dev.loteria.Loteria;
+import dev.loteria.dao.ModalidadeDao;
 import dev.loteria.interfaces.Servico;
 
 public class ModalidadeService implements Servico {
 
+  ModalidadeDao modalidadeDao;
+
+  public ModalidadeService() {
+    modalidadeDao = new ModalidadeDao();
+  }
+
   public void listar() {
-    retornarMenu();
   }
 
   public void inserir() {
     retornarMenu();
   }
 
-  public void atualizar() {
+  public void editar() {
     retornarMenu();
   }
 

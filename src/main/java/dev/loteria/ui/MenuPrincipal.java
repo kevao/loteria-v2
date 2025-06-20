@@ -1,6 +1,6 @@
 package dev.loteria.ui;
 
-import dev.loteria.database.Loteria;
+import dev.loteria.Loteria;
 
 public class MenuPrincipal extends Menu {
 
