@@ -14,7 +14,7 @@ public class MenuModalidades extends Menu {
   }
 
   public void mostrarOpcoes() {
-    System.out.println("\n====== MODALIDADE ======");
+    System.out.println("\n========== MODALIDADES ==========");
     System.out.println("1. Listar Modalidades");
     System.out.println("2. Inserir Modalidade");
     System.out.println("3. Atualizar Modalidade");

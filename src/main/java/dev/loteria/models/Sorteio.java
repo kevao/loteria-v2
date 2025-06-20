@@ -1,5 +1,6 @@
 package dev.loteria.models;
 
+import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -11,12 +12,22 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Kevin Villanova
  */
 public class Sorteio {
+  int id;
   Set<Integer> numerosSorteados = new LinkedHashSet<>();
   Modalidade modalidade;
+  LocalDateTime horario;
 
   public Sorteio(Modalidade modalidade) {
     this.modalidade = modalidade;
     this.sortear();
+    this.setHorario();
+  }
+
+  public Sorteio(int id, Modalidade modalidade) {
+    this.id = id;
+    this.modalidade = modalidade;
+    this.sortear();
+    this.setHorario();
   }
 
   public Set<Integer> getNumerosSorteados() {
@@ -25,6 +36,22 @@ public class Sorteio {
 
   public Modalidade getModalidade() {
     return modalidade;
+  }
+
+  public LocalDateTime getHorario() {
+    return horario;
+  }
+
+  public void setHorario() {
+    this.horario = LocalDateTime.now();
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
   }
 
   /**

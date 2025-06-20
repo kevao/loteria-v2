@@ -10,7 +10,7 @@ public class MenuPrincipal extends Menu {
 
   @Override
   public void mostrarOpcoes() {
-    System.out.println("\n====== MENU PRINCIPAL ======");
+    System.out.println("\n========== MENU PRINCIPAL ==========");
     System.out.println("1. Modalidades");
     System.out.println("2. Sorteios");
     System.out.println("3. Jogos");

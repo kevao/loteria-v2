@@ -25,6 +25,17 @@ public class Modalidade implements Modelo {
     this.descricao = descricao;
   }
 
+  public Modalidade(int id, String nome, int numerosSorteio, int menorBola, int maiorBola, double valorJogo,
+      String descricao) {
+    this.id = id;
+    this.nome = nome;
+    this.numerosSorteio = numerosSorteio;
+    this.menorBola = menorBola;
+    this.maiorBola = maiorBola;
+    this.valorJogo = valorJogo;
+    this.descricao = descricao;
+  }
+
   public int getId() {
     return id;
   }

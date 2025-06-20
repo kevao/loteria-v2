@@ -15,8 +15,14 @@ public class ModalidadeDao implements CRUD<Modalidade> {
 
   public ModalidadeDao() {
     conexao = new Conexao();
+    criarTabela();
+    criarMockups();
   }
 
+  /**
+   * Retorna um ResultSet com todas as modalidades cadastradas.
+   * Se ocorrer um erro, exibe uma mensagem e retorna null.
+   */
   public ResultSet listar() {
     try {
       return conexao.getConn().createStatement().executeQuery("SELECT * FROM modalidades");
@@ -27,60 +33,158 @@ public class ModalidadeDao implements CRUD<Modalidade> {
     return null;
   }
 
-  public void inserir(Modalidade modalidade) {
+  /**
+   * Cria a tabela de modalidades no banco de dados se ela não existir.
+   */
+  public void criarTabela() {
     try {
-      String sql = "INSERT INTO modalidades VALUES (?, ?)";
+      String sql = """
+          CREATE TABLE IF NOT EXISTS modalidades (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          nome VARCHAR(50) NOT NULL,
+          numerosSorteio INT NOT NULL,
+          menorBola INT NOT NULL,
+          maiorBola INT NOT NULL,
+          valorJogo DOUBLE NOT NULL,
+          descricao VARCHAR(255) NOT NULL
+          );
+          """;
+
+      conexao.getConn().createStatement().executeUpdate(sql);
+    } catch (SQLException e) {
+      System.out.println("Ocorreu um erro ao criar a tabela de modalidades.");
+    }
+  }
+
+  /*
+   * Cria mockups de modalidades se a tabela estiver vazia.
+   * Inicia com modalidades populares como Mega-Sena, Quina, Lotofácil e
+   * Lotomania.
+   * Reseta o AUTO_INCREMENT para garantir que os IDs comecem do 1.
+   */
+  public void criarMockups() {
+    if (contar() != 0)
+      return;
+
+    resetarAutoIncrement();
+
+    inserir(new Modalidade("Mega-Sena", 6, 1, 60, 6.0, "O jogo mais famoso do Brasil."));
+    inserir(new Modalidade("Quina", 5, 1, 80, 4.5, "Jogo popular com sorteio de 5 números."));
+    inserir(new Modalidade("Lotofácil", 15, 1, 25, 5.0, "Fácil de jogar, fácil de ganhar."));
+    inserir(new Modalidade("Lotomania", 20, 0, 99, 2.5, "Jogo com 20 números sorteados entre 0 e 99."));
+  }
+
+  public void resetarAutoIncrement() {
+    try {
+      conexao.getConn().createStatement().executeUpdate("ALTER TABLE modalidades AUTO_INCREMENT = 1");
+    } catch (SQLException e) {
+      System.out.println("Ocorreu um erro ao resetar o AUTO_INCREMENT da tabela modalidades.");
+    }
+  }
+
+  /*
+   * Insere uma nova modalidade na tabela.
+   * Antes de inserir, reseta o AUTO_INCREMENT para garantir que o ID pegue sempre
+   * o próximo número.
+   */
+  public void inserir(Modalidade modalidade) {
+
+    resetarAutoIncrement();
+
+    try {
+      String sql = "INSERT INTO modalidades (nome, numerosSorteio, menorBola, maiorBola, valorJogo, descricao) VALUES (?, ?, ?, ?, ?, ?)";
 
       ps = conexao.getConn().prepareStatement(sql);
 
       ps.setString(1, modalidade.getNome());
-      ps.setString(2, modalidade.getDescricao());
+      ps.setInt(2, modalidade.getNumerosSorteio());
+      ps.setInt(3, modalidade.getMenorBola());
+      ps.setInt(4, modalidade.getMaiorBola());
+      ps.setDouble(5, modalidade.getValorJogo());
+      ps.setString(6, modalidade.getDescricao());
 
       ps.executeUpdate();
 
       ps.close();
+      System.out.println("Modalidade inserida com sucesso!");
     } catch (SQLException e) {
       System.out.println("Ocorreu um erro ao inserir a modalidade");
-
-    }
-
-    System.out.println("Modalidade inserida com sucesso!");
-  }
-
-  public void deletar(int id) {
-    try {
-      String SQL = "DELETE FROM modalidades WHERE id = ?";
-
-      ps = conexao.getConn().prepareStatement(SQL);
-
-      ps.setInt(1, id);
-
-      ps.executeUpdate();
-
-      ps.close();
-    } catch (SQLException ex) {
-      ex.printStackTrace();
     }
   }
 
+  /*
+   * Edita uma modalidade existente.
+   * Verifica se o ID existe antes de tentar editar.
+   */
   public void editar(Modalidade modalidade) {
-    try {
-      String SQL = "UPDATE modalidades SET nome = ?, descricao = ? WHERE id = ?";
 
-      ps = conexao.getConn().prepareStatement(SQL);
+    if (!checkId(modalidade.getId())) {
+      System.out.println("Modalidade com ID " + modalidade.getId() + " não existe.");
+      return;
+    }
+
+    try {
+      String sql = "UPDATE modalidades SET nome = ?, numerosSorteio = ?, menorBola = ?, maiorBola = ?, valorJogo = ?, descricao = ? WHERE id = ?";
+
+      ps = conexao.getConn().prepareStatement(sql);
 
       ps.setString(1, modalidade.getNome());
-      ps.setString(2, modalidade.getDescricao());
-      ps.setInt(3, modalidade.getId());
+      ps.setInt(2, modalidade.getNumerosSorteio());
+      ps.setInt(3, modalidade.getMenorBola());
+      ps.setInt(4, modalidade.getMaiorBola());
+      ps.setDouble(5, modalidade.getValorJogo());
+      ps.setString(6, modalidade.getDescricao());
+      ps.setInt(7, modalidade.getId());
 
       ps.executeUpdate();
 
       ps.close();
+      System.out.println("Modalidade atualizada com sucesso!");
     } catch (SQLException ex) {
-      ex.printStackTrace();
+      System.out.println("Ocorreu um erro ao editar a modalidade.");
     }
   }
 
+  /*
+   * Deleta uma modalidade pelo ID.
+   * Verifica se o ID existe antes de tentar deletar.
+   * Se existir, deleta e atualiza os IDs das modalidades restantes.
+   * Se não existir, exibe uma mensagem informando que a modalidade não foi
+   * encontrada.
+   */
+  public void deletar(int id) {
+
+    if (!checkId(id)) {
+      System.out.println("Modalidade com ID " + id + " não existe.");
+      return;
+    }
+
+    try {
+      String sql = "DELETE FROM modalidades WHERE id = ?";
+      ps = conexao.getConn().prepareStatement(sql);
+      ps.setInt(1, id);
+      ps.executeUpdate();
+      ps.close();
+      System.out.println("Modalidade deletada com sucesso!");
+    } catch (SQLException ex) {
+      System.out.println("Ocorreu um erro ao deletar a modalidade.");
+    }
+
+    try {
+      String updateSql = "UPDATE modalidades SET id = id - 1 WHERE id > ?";
+      ps = conexao.getConn().prepareStatement(updateSql);
+      ps.setInt(1, id);
+      ps.executeUpdate();
+      ps.close();
+    } catch (SQLException ex) {
+      System.out.println("Ocorreu um erro ao atualizar os IDs das modalidades.");
+    }
+  }
+
+  /*
+   * Conta quantas modalidades existem na tabela.
+   * Se ocorrer um erro, exibe uma mensagem e retorna 0.
+   */
   public int contar() {
     int count = 0;
     try {
@@ -96,5 +200,68 @@ public class ModalidadeDao implements CRUD<Modalidade> {
       System.out.println("Ocorreu um erro ao contar as modalidades.");
     }
     return count;
+  }
+
+  /*
+   * Verifica se uma modalidade com o ID fornecido existe.
+   * Se não existir, exibe uma mensagem informando que a modalidade não foi
+   * encontrada.
+   * 
+   * @param id ID da modalidade a ser verificado.
+   * 
+   * @return true se o ID existir, false caso contrário.
+   * 
+   */
+  public boolean checkId(int id) {
+    try {
+      String sql = "SELECT 1 FROM modalidades WHERE id = ?";
+      ps = conexao.getConn().prepareStatement(sql);
+      ps.setInt(1, id);
+      ResultSet rs = ps.executeQuery();
+      boolean existe = rs.next();
+      rs.close();
+      ps.close();
+      return existe;
+    } catch (SQLException e) {
+      System.out.println("Ocorreu um erro ao verificar o ID da modalidade.");
+    }
+    return false;
+  }
+
+  /**
+   * Busca uma modalidade pelo ID.
+   * Se o ID não existir, exibe uma mensagem informando que a modalidade não foi
+   * encontrada.
+   */
+  public Modalidade getById(int id) {
+    if (!checkId(id)) {
+      System.out.println("Modalidade com ID " + id + " não existe.");
+      return null;
+    }
+
+    try {
+      String sql = "SELECT * FROM modalidades WHERE id = ?";
+      ps = conexao.getConn().prepareStatement(sql);
+      ps.setInt(1, id);
+      ResultSet rs = ps.executeQuery();
+      if (rs.next()) {
+        Modalidade modalidade = new Modalidade(
+            rs.getInt("id"),
+            rs.getString("nome"),
+            rs.getInt("numerosSorteio"),
+            rs.getInt("menorBola"),
+            rs.getInt("maiorBola"),
+            rs.getDouble("valorJogo"),
+            rs.getString("descricao"));
+        rs.close();
+        ps.close();
+        return modalidade;
+      }
+      rs.close();
+      ps.close();
+    } catch (SQLException e) {
+      System.out.println("Ocorreu um erro ao buscar a modalidade pelo ID.");
+    }
+    return null;
   }
 }

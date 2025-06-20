@@ -8,11 +8,11 @@ import dev.loteria.dao.ModalidadeDao;
 import dev.loteria.interfaces.Servico;
 import dev.loteria.models.Modalidade;
 
-public class ModalidadeService implements Servico {
+public class SorteioService implements Servico {
 
   ModalidadeDao modalidadeDao;
 
-  public ModalidadeService() {
+  public SorteioService() {
     modalidadeDao = new ModalidadeDao();
   }
 
