@@ -68,6 +68,8 @@ public class ModalidadeDao implements CRUD<Modalidade> {
 
     resetarAutoIncrement();
 
+    System.out.println("Criando mockups de modalidades...");
+
     inserir(new Modalidade("Mega-Sena", 6, 1, 60, 6.0, "O jogo mais famoso do Brasil."));
     inserir(new Modalidade("Quina", 5, 1, 80, 4.5, "Jogo popular com sorteio de 5 números."));
     inserir(new Modalidade("Lotofácil", 15, 1, 25, 5.0, "Fácil de jogar, fácil de ganhar."));

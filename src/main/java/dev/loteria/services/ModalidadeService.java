@@ -33,9 +33,6 @@ public class ModalidadeService implements Servico {
         String[] linha = { rs.getString("id"), rs.getString("nome"), rs.getString("numeros_sorteio"),
             rs.getString("menor_bola"), rs.getString("maior_bola"), String.format("%.2f", rs.getDouble("valor_jogo")),
             rs.getString("descricao") };
-        // for (int i = 0; i < colunas.length; i++) {
-        // linha[i] = rs.getString(i + 1);
-        // }
         at.addRow((Object[]) linha);
         at.addRule();
       }
