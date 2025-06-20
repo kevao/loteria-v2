@@ -3,6 +3,7 @@ package dev.loteria.services;
 import java.sql.ResultSet;
 
 import de.vandermeer.asciitable.AsciiTable;
+import de.vandermeer.asciitable.CWC_LongestLine;
 import dev.loteria.Loteria;
 import dev.loteria.dao.ModalidadeDao;
 import dev.loteria.dao.SorteioDao;
@@ -45,6 +46,10 @@ public class SorteioService implements Servico {
       System.out.println("Erro ao listar sorteios.");
     }
 
+    CWC_LongestLine larguraColunas = new CWC_LongestLine();
+
+    at.getRenderer().setCWC(larguraColunas);
+
     System.out.println(at.render());
 
     System.out.print("Aperte Enter para retornar ao menu: ");
@@ -66,7 +71,6 @@ public class SorteioService implements Servico {
 
       Sorteio sorteio = new Sorteio(modalidade);
       sorteioDao.inserir(sorteio);
-      System.out.println("Sorteio realizado e inserido com sucesso!");
     } catch (Exception e) {
       System.out.println("Erro ao inserir sorteio. Verifique os dados informados.");
     }
@@ -83,7 +87,6 @@ public class SorteioService implements Servico {
       System.out.print("ID do sorteio a ser deletado: ");
       int id = Integer.parseInt(System.console().readLine());
       sorteioDao.deletar(id);
-      System.out.println("Sorteio deletado com sucesso!");
     } catch (Exception e) {
       System.out.println("Erro ao deletar sorteio. Verifique o ID informado.");
     }

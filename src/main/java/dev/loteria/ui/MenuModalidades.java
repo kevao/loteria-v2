@@ -5,12 +5,9 @@ import dev.loteria.services.ModalidadeService;
 
 public class MenuModalidades extends Menu {
 
-  static {
-    servico = new ModalidadeService();
-  }
-
   public MenuModalidades() {
     this.opcaoMaxima = 4;
+    servico = new ModalidadeService();
   }
 
   public void mostrarOpcoes() {

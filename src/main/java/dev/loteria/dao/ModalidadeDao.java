@@ -42,10 +42,10 @@ public class ModalidadeDao implements CRUD<Modalidade> {
           CREATE TABLE IF NOT EXISTS modalidades (
           id INT AUTO_INCREMENT PRIMARY KEY,
           nome VARCHAR(50) NOT NULL,
-          numerosSorteio INT NOT NULL,
-          menorBola INT NOT NULL,
-          maiorBola INT NOT NULL,
-          valorJogo DOUBLE NOT NULL,
+          numeros_sorteio INT NOT NULL,
+          menor_bola INT NOT NULL,
+          maior_bola INT NOT NULL,
+          valor_jogo DOUBLE NOT NULL,
           descricao VARCHAR(255) NOT NULL
           );
           """;
@@ -92,7 +92,7 @@ public class ModalidadeDao implements CRUD<Modalidade> {
     resetarAutoIncrement();
 
     try {
-      String sql = "INSERT INTO modalidades (nome, numerosSorteio, menorBola, maiorBola, valorJogo, descricao) VALUES (?, ?, ?, ?, ?, ?)";
+      String sql = "INSERT INTO modalidades (nome, numeros_sorteio, menor_bola, maior_bola, valor_jogo, descricao) VALUES (?, ?, ?, ?, ?, ?)";
 
       ps = conexao.getConn().prepareStatement(sql);
 
@@ -124,7 +124,7 @@ public class ModalidadeDao implements CRUD<Modalidade> {
     }
 
     try {
-      String sql = "UPDATE modalidades SET nome = ?, numerosSorteio = ?, menorBola = ?, maiorBola = ?, valorJogo = ?, descricao = ? WHERE id = ?";
+      String sql = "UPDATE modalidades SET nome = ?, numeros_sorteio = ?, menor_bola = ?, maior_bola = ?, valor_jogo = ?, descricao = ? WHERE id = ?";
 
       ps = conexao.getConn().prepareStatement(sql);
 
@@ -248,10 +248,10 @@ public class ModalidadeDao implements CRUD<Modalidade> {
         Modalidade modalidade = new Modalidade(
             rs.getInt("id"),
             rs.getString("nome"),
-            rs.getInt("numerosSorteio"),
-            rs.getInt("menorBola"),
-            rs.getInt("maiorBola"),
-            rs.getDouble("valorJogo"),
+            rs.getInt("numeros_sorteio"),
+            rs.getInt("menor_bola"),
+            rs.getInt("maior_bola"),
+            rs.getDouble("valor_jogo"),
             rs.getString("descricao"));
         rs.close();
         ps.close();

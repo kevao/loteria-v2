@@ -3,6 +3,7 @@ package dev.loteria.services;
 import java.sql.ResultSet;
 
 import de.vandermeer.asciitable.AsciiTable;
+import de.vandermeer.asciitable.CWC_LongestLine;
 import dev.loteria.Loteria;
 import dev.loteria.dao.ModalidadeDao;
 import dev.loteria.interfaces.Servico;
@@ -20,7 +21,8 @@ public class ModalidadeService implements Servico {
     ResultSet rs = modalidadeDao.listar();
     AsciiTable at = new AsciiTable();
 
-    String[] colunas = { "ID", "Nome", "Números no Sorteio", "Menor Bola", "Maior Bola", "Valor do Jogo", "Descrição" };
+    String[] colunas = { "ID", "Nome", "Números\nno Sorteio", "Menor\nBola", "Maior\nBola", "Valor\ndo Jogo",
+        "Descrição" };
 
     at.addRule();
     at.addRow((Object[]) colunas);
@@ -28,10 +30,12 @@ public class ModalidadeService implements Servico {
 
     try {
       while (rs != null && rs.next()) {
-        String[] linha = new String[colunas.length];
-        for (int i = 0; i < colunas.length; i++) {
-          linha[i] = rs.getString(i + 1);
-        }
+        String[] linha = { rs.getString("id"), rs.getString("nome"), rs.getString("numeros_sorteio"),
+            rs.getString("menor_bola"), rs.getString("maior_bola"), String.format("%.2f", rs.getDouble("valor_jogo")),
+            rs.getString("descricao") };
+        // for (int i = 0; i < colunas.length; i++) {
+        // linha[i] = rs.getString(i + 1);
+        // }
         at.addRow((Object[]) linha);
         at.addRule();
       }
@@ -41,6 +45,10 @@ public class ModalidadeService implements Servico {
     } catch (Exception e) {
       System.out.println("Erro ao listar modalidades.");
     }
+
+    CWC_LongestLine larguraColunas = new CWC_LongestLine();
+
+    at.getRenderer().setCWC(larguraColunas);
 
     System.out.println(at.render());
 

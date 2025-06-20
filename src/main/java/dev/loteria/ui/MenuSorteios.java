@@ -5,12 +5,9 @@ import dev.loteria.services.SorteioService;
 
 public class MenuSorteios extends Menu {
 
-  static {
-    servico = new SorteioService();
-  }
-
   public MenuSorteios() {
     this.opcaoMaxima = 3;
+    servico = new SorteioService();
   }
 
   public void mostrarOpcoes() {

@@ -8,7 +8,7 @@ public abstract class Menu {
 
   protected int opcao = 99;
   protected int opcaoMaxima = 5;
-  protected static Servico servico;
+  protected Servico servico;
 
   public void init() {
     mostrarOpcoes();
