@@ -23,7 +23,8 @@ public class SorteioDao implements CRUD<Sorteio> {
    */
   public ResultSet listar() {
     try {
-      return conexao.getConn().createStatement().executeQuery("SELECT * FROM sorteios");
+      return conexao.getConn().createStatement().executeQuery(
+          "SELECT s.id, m.nome, s.numeros_sorteados, s.horario FROM sorteios s INNER JOIN modalidades m ON s.modalidade_id = m.id");
     } catch (SQLException e) {
       System.out.println("Ocorreu um erro ao listar sorteios.");
     }
@@ -55,16 +56,16 @@ public class SorteioDao implements CRUD<Sorteio> {
    */
   public void inserir(Sorteio sorteio) {
     try {
-      String sql = "INSERT INTO sorteios (modalidade_id, data, numeros_sorteados) VALUES (?, ?, ?)";
+      String sql = "INSERT INTO sorteios (modalidade_id, horario, numeros_sorteados) VALUES (?, ?, ?)";
       ps = conexao.getConn().prepareStatement(sql);
       ps.setInt(1, sorteio.getModalidade().getId());
       ps.setTimestamp(2, java.sql.Timestamp.valueOf(sorteio.getHorario()));
-      ps.setString(3, String.join(",", sorteio.getNumerosSorteados().stream().map(String::valueOf).toList()));
+      ps.setString(3, String.join("-", sorteio.getNumerosSorteados().stream().map(String::valueOf).toList()));
       ps.executeUpdate();
       ps.close();
-      System.out.println("Sorteio inserido com sucesso!");
+      System.out.println("Sorteio realizado com sucesso!");
     } catch (SQLException e) {
-      System.out.println("Ocorreu um erro ao inserir o sorteio");
+      System.out.println("Ocorreu um erro ao realizar o sorteio");
     }
   }
 

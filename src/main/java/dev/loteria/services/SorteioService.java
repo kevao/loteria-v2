@@ -8,6 +8,7 @@ import dev.loteria.dao.ModalidadeDao;
 import dev.loteria.dao.SorteioDao;
 import dev.loteria.interfaces.Servico;
 import dev.loteria.models.Modalidade;
+import dev.loteria.models.Sorteio;
 
 public class SorteioService implements Servico {
 
@@ -41,7 +42,7 @@ public class SorteioService implements Servico {
         rs.close();
       }
     } catch (Exception e) {
-      System.out.println("Erro ao listar modalidades.");
+      System.out.println("Erro ao listar sorteios.");
     }
 
     System.out.println(at.render());
@@ -63,7 +64,7 @@ public class SorteioService implements Servico {
         return;
       }
 
-      dev.loteria.models.Sorteio sorteio = new dev.loteria.models.Sorteio(modalidade);
+      Sorteio sorteio = new Sorteio(modalidade);
       sorteioDao.inserir(sorteio);
       System.out.println("Sorteio realizado e inserido com sucesso!");
     } catch (Exception e) {
@@ -79,17 +80,17 @@ public class SorteioService implements Servico {
 
   public void deletar() {
     try {
-      System.out.print("ID da modalidade a ser deletada: ");
+      System.out.print("ID do sorteio a ser deletado: ");
       int id = Integer.parseInt(System.console().readLine());
       sorteioDao.deletar(id);
-      System.out.println("Modalidade deletada com sucesso!");
+      System.out.println("Sorteio deletado com sucesso!");
     } catch (Exception e) {
-      System.out.println("Erro ao deletar modalidade. Verifique o ID informado.");
+      System.out.println("Erro ao deletar sorteio. Verifique o ID informado.");
     }
     retornarMenu();
   }
 
   public void retornarMenu() {
-    Loteria.getMenuModalidades().init();
+    Loteria.getMenuSorteios().init();
   }
 }
