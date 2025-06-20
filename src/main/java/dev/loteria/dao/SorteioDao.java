@@ -39,7 +39,7 @@ public class SorteioDao implements CRUD<Sorteio> {
           CREATE TABLE IF NOT EXISTS sorteios (
           id INT AUTO_INCREMENT PRIMARY KEY,
           modalidade_id INT NOT NULL,
-          numeros_sorteados VARCHAR(100) NOT NULL,
+          numeros_sorteados TEXT NOT NULL,
           horario DATETIME NOT NULL,
           FOREIGN KEY (modalidade_id) REFERENCES modalidades(id)
           );
@@ -65,31 +65,6 @@ public class SorteioDao implements CRUD<Sorteio> {
       System.out.println("Sorteio inserido com sucesso!");
     } catch (SQLException e) {
       System.out.println("Ocorreu um erro ao inserir o sorteio");
-    }
-  }
-
-  /*
-   * Edita um sorteio existente.
-   */
-  public void editar(Sorteio sorteio) {
-
-    if (!checkId(sorteio.getId())) {
-      System.out.println("Sorteio com o ID informado não existe.");
-      return;
-    }
-
-    try {
-      String sql = "UPDATE sorteios SET modalidade_id = ?, numeros_sorteados = ?, horario = ? WHERE id = ?";
-      ps = conexao.getConn().prepareStatement(sql);
-      ps.setInt(1, sorteio.getModalidade().getId());
-      ps.setString(2, String.join(",", sorteio.getNumerosSorteados().stream().map(String::valueOf).toList()));
-      ps.setTimestamp(3, java.sql.Timestamp.valueOf(sorteio.getHorario()));
-      ps.setInt(4, sorteio.getId());
-      ps.executeUpdate();
-      ps.close();
-      System.out.println("Sorteio atualizado com sucesso!");
-    } catch (SQLException ex) {
-      System.out.println("Ocorreu um erro ao editar o sorteio.");
     }
   }
 
@@ -160,5 +135,9 @@ public class SorteioDao implements CRUD<Sorteio> {
       System.out.println("Ocorreu um erro ao verificar a existência do sorteio.");
       return false;
     }
+  }
+
+  public void editar(Sorteio sorteio) {
+    System.out.println("Não é possível editar um sorteio.");
   }
 }

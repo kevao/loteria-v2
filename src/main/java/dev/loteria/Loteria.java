@@ -2,7 +2,6 @@ package dev.loteria;
 
 import java.util.Scanner;
 import dev.loteria.database.Conexao;
-import dev.loteria.ui.MenuJogos;
 import dev.loteria.ui.MenuModalidades;
 import dev.loteria.ui.MenuPrincipal;
 import dev.loteria.ui.MenuSorteios;
@@ -18,7 +17,6 @@ public final class Loteria {
   private static MenuPrincipal menuPrincipal = new MenuPrincipal();
   private static MenuModalidades menuModalidades = new MenuModalidades();
   private static MenuSorteios menuSorteios = new MenuSorteios();
-  private static MenuJogos menuJogos = new MenuJogos();
 
   public static void main(String[] args) {
     new Conexao();
@@ -35,9 +33,5 @@ public final class Loteria {
 
   public static MenuSorteios getMenuSorteios() {
     return menuSorteios;
-  }
-
-  public static MenuJogos getMenuJogos() {
-    return menuJogos;
   }
 }

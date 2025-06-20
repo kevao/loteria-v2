@@ -5,22 +5,24 @@ import java.sql.ResultSet;
 import de.vandermeer.asciitable.AsciiTable;
 import dev.loteria.Loteria;
 import dev.loteria.dao.ModalidadeDao;
+import dev.loteria.dao.SorteioDao;
 import dev.loteria.interfaces.Servico;
 import dev.loteria.models.Modalidade;
 
 public class SorteioService implements Servico {
 
-  ModalidadeDao modalidadeDao;
+  SorteioDao sorteioDao;
+  ModalidadeDao modalidadeDao = new ModalidadeDao();
 
   public SorteioService() {
-    modalidadeDao = new ModalidadeDao();
+    sorteioDao = new SorteioDao();
   }
 
   public void listar() {
-    ResultSet rs = modalidadeDao.listar();
+    ResultSet rs = sorteioDao.listar();
     AsciiTable at = new AsciiTable();
 
-    String[] colunas = { "ID", "Nome", "Números no Sorteio", "Menor Bola", "Maior Bola", "Valor do Jogo", "Descrição" };
+    String[] colunas = { "ID", "Modalidade", "Números", "Data/Hora" };
 
     at.addRule();
     at.addRow((Object[]) colunas);
@@ -51,60 +53,27 @@ public class SorteioService implements Servico {
 
   public void inserir() {
     try {
-      System.out.print("Nome da modalidade: ");
-      String nome = System.console().readLine();
+      System.out.print("ID da modalidade para o sorteio: ");
+      int modalidadeId = Integer.parseInt(System.console().readLine());
 
-      System.out.print("Quantidade de números no sorteio: ");
-      int numerosSorteio = Integer.parseInt(System.console().readLine());
+      Modalidade modalidade = modalidadeDao.getById(modalidadeId);
+      if (modalidade == null) {
+        System.out.println("Modalidade não encontrada.");
+        retornarMenu();
+        return;
+      }
 
-      System.out.print("Menor número possível: ");
-      int menorBola = Integer.parseInt(System.console().readLine());
-
-      System.out.print("Maior número possível: ");
-      int maiorBola = Integer.parseInt(System.console().readLine());
-
-      System.out.print("Valor do jogo: ");
-      double valorJogo = Double.parseDouble(System.console().readLine());
-
-      System.out.print("Descrição: ");
-      String descricao = System.console().readLine();
-
-      Modalidade modalidade = new Modalidade(nome, numerosSorteio, menorBola, maiorBola, valorJogo, descricao);
-      modalidadeDao.inserir(modalidade);
+      dev.loteria.models.Sorteio sorteio = new dev.loteria.models.Sorteio(modalidade);
+      sorteioDao.inserir(sorteio);
+      System.out.println("Sorteio realizado e inserido com sucesso!");
     } catch (Exception e) {
-      System.out.println("Erro ao inserir modalidade. Verifique os dados informados.");
+      System.out.println("Erro ao inserir sorteio. Verifique os dados informados.");
     }
     retornarMenu();
   }
 
   public void editar() {
-    try {
-      System.out.print("ID da modalidade a ser editada: ");
-      int id = Integer.parseInt(System.console().readLine());
-
-      System.out.print("Novo nome da modalidade: ");
-      String nome = System.console().readLine();
-
-      System.out.print("Nova quantidade de números no sorteio: ");
-      int numerosSorteio = Integer.parseInt(System.console().readLine());
-
-      System.out.print("Novo menor número possível: ");
-      int menorBola = Integer.parseInt(System.console().readLine());
-
-      System.out.print("Novo maior número possível: ");
-      int maiorBola = Integer.parseInt(System.console().readLine());
-
-      System.out.print("Novo valor do jogo: ");
-      double valorJogo = Double.parseDouble(System.console().readLine());
-
-      System.out.print("Nova descrição: ");
-      String descricao = System.console().readLine();
-
-      Modalidade modalidade = new Modalidade(id, nome, numerosSorteio, menorBola, maiorBola, valorJogo, descricao);
-      modalidadeDao.editar(modalidade);
-    } catch (Exception e) {
-      System.out.println("Erro ao editar modalidade. Verifique os dados informados.");
-    }
+    System.out.println("Não é possível editar um sorteio.");
     retornarMenu();
   }
 
@@ -112,7 +81,7 @@ public class SorteioService implements Servico {
     try {
       System.out.print("ID da modalidade a ser deletada: ");
       int id = Integer.parseInt(System.console().readLine());
-      modalidadeDao.deletar(id);
+      sorteioDao.deletar(id);
       System.out.println("Modalidade deletada com sucesso!");
     } catch (Exception e) {
       System.out.println("Erro ao deletar modalidade. Verifique o ID informado.");
