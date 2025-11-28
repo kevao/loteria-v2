@@ -91,6 +91,17 @@ public class ModalidadeController {
 
     btnNew.setOnAction(e -> openForm(null));
 
+    // Ajustes visuais do botão "Novo" para combinar com os botões de ação
+    btnNew.setText("Nova modalidade");
+    SVGPath plus = new SVGPath();
+    plus.setContent("M19 13H13V19H11V13H5V11H11V5h2v6h6v2z");
+    plus.getStyleClass().add("action-icon");
+    btnNew.setGraphic(plus);
+    btnNew.getStyleClass().add("action-btn");
+    btnNew.setMinWidth(100);
+    btnNew.setPrefHeight(34);
+    btnNew.setTooltip(new Tooltip("Criar nova modalidade"));
+
     // Política de redimensionamento (mantive comportamento anterior)
     tableModalidades.setColumnResizePolicy(javafx.scene.control.TableView.CONSTRAINED_RESIZE_POLICY);
 

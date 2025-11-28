@@ -1,6 +1,7 @@
 package dev.loteria.dao;
 
 import dev.loteria.database.Conexao;
+import java.sql.Connection;
 import dev.loteria.interfaces.CRUD;
 import dev.loteria.models.Sorteio;
 
@@ -10,11 +11,11 @@ import java.sql.SQLException;
 
 public class SorteioDao implements CRUD<Sorteio> {
 
-  private Conexao conexao;
+  private Connection conn;
   private PreparedStatement ps;
 
   public SorteioDao() {
-    conexao = new Conexao();
+    conn = Conexao.getConn();
     criarTabela();
   }
 
@@ -23,7 +24,7 @@ public class SorteioDao implements CRUD<Sorteio> {
    */
   public ResultSet listar() {
     try {
-      return conexao.getConn().createStatement().executeQuery(
+      return conn.createStatement().executeQuery(
           "SELECT s.id, m.nome, s.numeros_sorteados, s.horario FROM sorteios s INNER JOIN modalidades m ON s.modalidade_id = m.id");
     } catch (SQLException e) {
       System.out.println("Ocorreu um erro ao listar sorteios.");
@@ -45,7 +46,7 @@ public class SorteioDao implements CRUD<Sorteio> {
           FOREIGN KEY (modalidade_id) REFERENCES modalidades(id)
           );
           """;
-      conexao.getConn().createStatement().executeUpdate(sql);
+      conn.createStatement().executeUpdate(sql);
     } catch (SQLException e) {
       System.out.println("Ocorreu um erro ao criar a tabela de sorteios.");
     }
@@ -57,7 +58,7 @@ public class SorteioDao implements CRUD<Sorteio> {
   public void inserir(Sorteio sorteio) {
     try {
       String sql = "INSERT INTO sorteios (modalidade_id, horario, numeros_sorteados) VALUES (?, ?, ?) RETURNING id";
-      ps = conexao.getConn().prepareStatement(sql);
+      ps = conn.prepareStatement(sql);
       ps.setObject(1, sorteio.getModalidade().getId());
       ps.setTimestamp(2, java.sql.Timestamp.valueOf(sorteio.getHorario()));
       ps.setString(3, String.join("-", sorteio.getNumerosSorteados().stream().map(String::valueOf).toList()));
@@ -90,7 +91,7 @@ public class SorteioDao implements CRUD<Sorteio> {
 
     try {
       String sql = "DELETE FROM sorteios WHERE id = ?";
-      ps = conexao.getConn().prepareStatement(sql);
+      ps = conn.prepareStatement(sql);
       ps.setObject(1, id);
       ps.executeUpdate();
       ps.close();
@@ -109,7 +110,7 @@ public class SorteioDao implements CRUD<Sorteio> {
     int count = 0;
     try {
       String sql = "SELECT COUNT(*) FROM sorteios";
-      ps = conexao.getConn().prepareStatement(sql);
+      ps = conn.prepareStatement(sql);
       ResultSet rs = ps.executeQuery();
       if (rs.next()) {
         count = rs.getInt(1);
@@ -131,7 +132,7 @@ public class SorteioDao implements CRUD<Sorteio> {
   public boolean checkId(java.util.UUID id) {
     try {
       String sql = "SELECT 1 FROM sorteios WHERE id = ?";
-      ps = conexao.getConn().prepareStatement(sql);
+      ps = conn.prepareStatement(sql);
       ps.setObject(1, id);
       ResultSet rs = ps.executeQuery();
       boolean existe = rs.next();

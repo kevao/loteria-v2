@@ -1,6 +1,7 @@
 package dev.loteria.dao;
 
 import dev.loteria.database.Conexao;
+import java.sql.Connection;
 import dev.loteria.interfaces.CRUD;
 import dev.loteria.models.Modalidade;
 
@@ -10,11 +11,11 @@ import java.sql.SQLException;
 
 public class ModalidadeDao implements CRUD<Modalidade> {
 
-  private Conexao conexao;
+  private Connection conn;
   private PreparedStatement ps;
 
   public ModalidadeDao() {
-    conexao = new Conexao();
+    conn = Conexao.getConn();
     criarTabela();
     criarMockups();
   }
@@ -25,7 +26,7 @@ public class ModalidadeDao implements CRUD<Modalidade> {
    */
   public ResultSet listar() {
     try {
-      return conexao.getConn().createStatement().executeQuery("SELECT * FROM modalidades");
+      return conn.createStatement().executeQuery("SELECT * FROM modalidades");
     } catch (SQLException e) {
       System.out.println("Ocorreu um erro ao listar modalidades.");
     }
@@ -39,7 +40,7 @@ public class ModalidadeDao implements CRUD<Modalidade> {
   public void criarTabela() {
     try {
       // ensure uuid extension available
-      conexao.getConn().createStatement().executeUpdate("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";");
+      conn.createStatement().executeUpdate("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";");
 
       String sql = """
           CREATE TABLE IF NOT EXISTS modalidades (
@@ -53,7 +54,7 @@ public class ModalidadeDao implements CRUD<Modalidade> {
           );
           """;
 
-      conexao.getConn().createStatement().executeUpdate(sql);
+      conn.createStatement().executeUpdate(sql);
     } catch (SQLException e) {
       System.out.println("Ocorreu um erro ao criar a tabela de modalidades.");
     }
@@ -63,7 +64,6 @@ public class ModalidadeDao implements CRUD<Modalidade> {
    * Cria mockups de modalidades se a tabela estiver vazia.
    * Inicia com modalidades populares como Mega-Sena, Quina, Lotofácil e
    * Lotomania.
-   * Reseta o AUTO_INCREMENT para garantir que os IDs comecem do 1.
    */
   public void criarMockups() {
     if (contar() != 0)
@@ -89,7 +89,7 @@ public class ModalidadeDao implements CRUD<Modalidade> {
     try {
       String sql = "INSERT INTO modalidades (nome, numeros_sorteio, menor_bola, maior_bola, valor_jogo, descricao) VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
 
-      ps = conexao.getConn().prepareStatement(sql);
+      ps = conn.prepareStatement(sql);
 
       ps.setString(1, modalidade.getNome());
       ps.setInt(2, modalidade.getNumerosSorteio());
@@ -127,7 +127,7 @@ public class ModalidadeDao implements CRUD<Modalidade> {
     try {
       String sql = "UPDATE modalidades SET nome = ?, numeros_sorteio = ?, menor_bola = ?, maior_bola = ?, valor_jogo = ?, descricao = ? WHERE id = ?";
 
-      ps = conexao.getConn().prepareStatement(sql);
+      ps = conn.prepareStatement(sql);
 
       ps.setString(1, modalidade.getNome());
       ps.setInt(2, modalidade.getNumerosSorteio());
@@ -162,7 +162,7 @@ public class ModalidadeDao implements CRUD<Modalidade> {
 
     try {
       String sql = "DELETE FROM modalidades WHERE id = ?";
-      ps = conexao.getConn().prepareStatement(sql);
+      ps = conn.prepareStatement(sql);
       ps.setObject(1, id);
       ps.executeUpdate();
       ps.close();
@@ -180,7 +180,7 @@ public class ModalidadeDao implements CRUD<Modalidade> {
     int count = 0;
     try {
       String sql = "SELECT COUNT(*) FROM modalidades";
-      ps = conexao.getConn().prepareStatement(sql);
+      ps = conn.prepareStatement(sql);
       ResultSet rs = ps.executeQuery();
       if (rs.next()) {
         count = rs.getInt(1);
@@ -206,7 +206,7 @@ public class ModalidadeDao implements CRUD<Modalidade> {
   public boolean checkId(java.util.UUID id) {
     try {
       String sql = "SELECT 1 FROM modalidades WHERE id = ?";
-      ps = conexao.getConn().prepareStatement(sql);
+      ps = conn.prepareStatement(sql);
       ps.setObject(1, id);
       ResultSet rs = ps.executeQuery();
       boolean existe = rs.next();
@@ -232,7 +232,7 @@ public class ModalidadeDao implements CRUD<Modalidade> {
 
     try {
       String sql = "SELECT * FROM modalidades WHERE id = ?";
-      ps = conexao.getConn().prepareStatement(sql);
+      ps = conn.prepareStatement(sql);
       ps.setObject(1, id);
       ResultSet rs = ps.executeQuery();
       if (rs.next()) {

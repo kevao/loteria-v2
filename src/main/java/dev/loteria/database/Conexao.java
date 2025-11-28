@@ -4,23 +4,29 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class Conexao {
-  private Connection conn;
+public final class Conexao {
 
-  public Conexao() {
+  private static final String URL = "jdbc:postgresql://localhost:5442/loteria";
+  private static final String USUARIO = "root";
+  private static final String SENHA = "rootpass";
+  private static final Conexao INSTANCE = new Conexao();
+
+  private final Connection conn;
+
+  private Conexao() {
     try {
-      // Conecta ao PostgreSQL na porta 5442 (host +10 conforme solicitado)
-      String url = "jdbc:postgresql://localhost:5442/loteria";
-      String usuario = "root";
-      String senha = "rootpass";
-      conn = DriverManager.getConnection(url, usuario, senha);
+      conn = DriverManager.getConnection(URL, USUARIO, SENHA);
     } catch (SQLException e) {
       throw new RuntimeException("Erro ao conectar ao banco de dados", e);
     }
   }
 
-  public Connection getConn() {
-    return conn;
+  private static Conexao getInstance() {
+    return INSTANCE;
+  }
+
+  public static Connection getConn() {
+    return getInstance().conn;
   }
 
 }

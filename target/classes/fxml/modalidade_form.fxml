@@ -5,26 +5,49 @@
   fx:controller="dev.loteria.ui.gui.controllers.ModalidadeFormController" spacing="8"
   style="-fx-padding: 12;"
   styleClass="view-root">
-  <Label fx:id="titleLabel" text="Nova Modalidade" styleClass="view-title" />
+  <!-- O título da janela é definido pelo Stage; removido título duplicado aqui -->
   <GridPane hgap="8" vgap="8">
-    <Label text="Nome:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
-    <TextField fx:id="nomeField" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+    <columnConstraints>
+      <ColumnConstraints hgrow="ALWAYS" />
+    </columnConstraints>
 
-    <Label text="Números no sorteio:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
-    <TextField fx:id="numerosField" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+    <VBox spacing="4" GridPane.rowIndex="0" GridPane.columnIndex="0">
+      <Label text="Nome" />
+      <TextField fx:id="nomeField" maxWidth="Infinity" />
+    </VBox>
 
-    <Label text="Menor bola:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
-    <TextField fx:id="menorField" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+    <HBox spacing="12" GridPane.rowIndex="1" GridPane.columnIndex="0">
+      <VBox spacing="4" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+        <Label text="Valor do jogo" />
+        <HBox spacing="4" alignment="CENTER_LEFT">
+          <TextField fx:id="valorField" maxWidth="Infinity" text="0,00" />
+        </HBox>
+      </VBox>
 
-    <Label text="Maior bola:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
-    <TextField fx:id="maiorField" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+      <VBox spacing="4" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+        <Label text="Bolas Sorteadas" />
+        <TextField fx:id="numerosField" maxWidth="Infinity" promptText="6" />
+      </VBox>
 
-    <Label text="Valor do jogo:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
-    <TextField fx:id="valorField" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+      <VBox spacing="4" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+        <Label text="Menor bola" />
+        <TextField fx:id="menorField" maxWidth="Infinity" promptText="0" />
+      </VBox>
 
-    <Label text="Descrição:" GridPane.rowIndex="5" GridPane.columnIndex="0" />
-    <TextArea fx:id="descricaoArea" prefRowCount="3" GridPane.rowIndex="5" GridPane.columnIndex="1" />
+      <VBox spacing="4" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+        <Label text="Maior bola" />
+        <TextField fx:id="maiorField" maxWidth="Infinity" promptText="99" />
+      </VBox>
+    </HBox>
+
+    <VBox spacing="4" GridPane.rowIndex="2" GridPane.columnIndex="0">
+      <Label text="Descrição" />
+      <TextArea fx:id="descricaoArea" prefRowCount="3" maxWidth="Infinity" />
+    </VBox>
   </GridPane>
+
+  <!-- Status label usado pelo controller para mensagens menores (vazio por padrão) -->
+  <Label fx:id="titleLabel" text="" styleClass="form-status" />
 
   <HBox spacing="8" alignment="CENTER_RIGHT">
     <Button fx:id="btnCancel" text="Cancelar" />

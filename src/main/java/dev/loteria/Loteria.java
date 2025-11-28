@@ -9,8 +9,9 @@ import dev.loteria.ui.gui.MainApp;
 public final class Loteria {
 
   public static void main(String[] args) {
-    // inicializa a conexão com o banco (DAOs usarão Conexao quando necessário)
-    new Conexao();
+    // inicializa a conexão com o banco (DAOs usarão Conexao.getInstance() quando
+    // necessário)
+    Conexao.getConn();
     // inicia a aplicação JavaFX
     MainApp.main(args);
   }
