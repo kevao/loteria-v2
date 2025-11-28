@@ -1,40 +1,10 @@
 package dev.loteria.ui;
 
-import java.util.InputMismatchException;
-import dev.loteria.Loteria;
-import dev.loteria.interfaces.Servico;
-
+/**
+ * Placeholder para a antiga UI de console. A aplicação agora usa JavaFX.
+ * Mantenha esta classe apenas para compatibilidade durante a migração.
+ */
+@Deprecated
 public abstract class Menu {
-
-  protected int opcao = 99;
-  protected int opcaoMaxima = 5;
-  protected Servico servico;
-
-  public void init() {
-    mostrarOpcoes();
-    seguirOpcao();
-  }
-
-  public void escolherOpcao() {
-    System.out.print("\nEscolha uma opção: ");
-
-    try {
-      opcao = Loteria.SCANNER.nextInt();
-    } catch (InputMismatchException e) {
-      System.out.println("Opção inválida. Por favor, insira um número.");
-      Loteria.SCANNER.nextLine();
-      escolherOpcao();
-      return;
-    }
-
-    if (opcao < 0 || opcao > opcaoMaxima) {
-      System.out.println("Opção inválida. Por favor, escolha uma opção entre 0 e " + opcaoMaxima + ".");
-      escolherOpcao();
-      return;
-    }
-  }
-
-  abstract void mostrarOpcoes();
-
-  abstract void seguirOpcao();
+  // Não implementar lógica de console aqui — usar a GUI.
 }

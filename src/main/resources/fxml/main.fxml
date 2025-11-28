@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.SVGPath?>
+<BorderPane fx:id="root" xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="dev.loteria.ui.gui.controllers.MainController">
+    <left>
+        <VBox spacing="12" styleClass="sidebar" prefWidth="240" alignment="TOP_LEFT">
+            <HBox spacing="18" alignment="CENTER_LEFT" styleClass="brand-row">
+                <StackPane prefWidth="56" prefHeight="56" styleClass="brand-icon">
+                    <Label text="L" styleClass="brand-icon-letter" />
+                </StackPane>
+                <VBox>
+                    <Label text="Loteria" styleClass="brand-text" />
+                    <Label text="Painel de administração" styleClass="brand-subtext" />
+                </VBox>
+            </HBox>
+
+            <VBox spacing="6" styleClass="nav">
+                <Button fx:id="btnModalidades" text="Modalidades" maxWidth="Infinity"
+                    mnemonicParsing="false" styleClass="nav-button">
+                    <graphic>
+                        <SVGPath styleClass="nav-icon"
+                            content="M3 3h4v4H3V3zm6 0h4v4H9V3zm6 0h4v4h-4V3zM3 9h4v4H3V9zm6 0h4v4H9V9zm6 0h4v4h-4V9zM3 15h4v4H3v-4zm6 0h4v4H9v-4zm6 0h4v4h-4v-4z" />
+                    </graphic>
+                </Button>
+                <Button fx:id="btnSorteios" text="Sorteios" maxWidth="Infinity"
+                    mnemonicParsing="false"
+                    styleClass="nav-button">
+                    <graphic>
+                        <SVGPath styleClass="nav-icon"
+                            content="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z" />
+                    </graphic>
+                </Button>
+            </VBox>
+        </VBox>
+    </left>
+    <center>
+        <AnchorPane fx:id="content" />
+    </center>
+</BorderPane>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="dev.loteria.ui.gui.controllers.ModalidadeFormController" spacing="8"
+  style="-fx-padding: 12;"
+  styleClass="view-root">
+  <Label fx:id="titleLabel" text="Nova Modalidade" styleClass="view-title" />
+  <GridPane hgap="8" vgap="8">
+    <Label text="Nome:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+    <TextField fx:id="nomeField" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+    <Label text="Números no sorteio:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+    <TextField fx:id="numerosField" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+
+    <Label text="Menor bola:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+    <TextField fx:id="menorField" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+
+    <Label text="Maior bola:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+    <TextField fx:id="maiorField" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+
+    <Label text="Valor do jogo:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
+    <TextField fx:id="valorField" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+
+    <Label text="Descrição:" GridPane.rowIndex="5" GridPane.columnIndex="0" />
+    <TextArea fx:id="descricaoArea" prefRowCount="3" GridPane.rowIndex="5" GridPane.columnIndex="1" />
+  </GridPane>
+
+  <HBox spacing="8" alignment="CENTER_RIGHT">
+    <Button fx:id="btnCancel" text="Cancelar" />
+    <Button fx:id="btnSave" text="Salvar" />
+  </HBox>
+</VBox>

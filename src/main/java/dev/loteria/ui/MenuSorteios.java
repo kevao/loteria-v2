@@ -1,31 +1,9 @@
 package dev.loteria.ui;
 
-import dev.loteria.Loteria;
-import dev.loteria.services.SorteioService;
-
+/**
+ * Placeholder MenuSorteios — console UI foi removida.
+ */
+@Deprecated
 public class MenuSorteios extends Menu {
-
-  public MenuSorteios() {
-    this.opcaoMaxima = 3;
-    servico = new SorteioService();
-  }
-
-  public void mostrarOpcoes() {
-    System.out.println("\n========== SORTEIOS ===========");
-    System.out.println("1. Listar Sorteios");
-    System.out.println("2. Inserir Sorteio");
-    System.out.println("3. Deletar Sorteio");
-    System.out.println("0. Voltar ao menu principal");
-  }
-
-  public void seguirOpcao() {
-    escolherOpcao();
-    switch (opcao) {
-      case 1 -> servico.listar();
-      case 2 -> servico.inserir();
-      case 3 -> servico.deletar();
-      case 0 -> Loteria.getMenuPrincipal().init();
-    }
-  }
-
+  // Não utilizar; a aplicação usa a GUI JavaFX.
 }

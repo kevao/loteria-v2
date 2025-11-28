@@ -1,37 +1,18 @@
 package dev.loteria;
 
-import java.util.Scanner;
 import dev.loteria.database.Conexao;
-import dev.loteria.ui.MenuModalidades;
-import dev.loteria.ui.MenuPrincipal;
-import dev.loteria.ui.MenuSorteios;
+import dev.loteria.ui.gui.MainApp;
 
 /**
- * Classe representando a loteria.
- * 
- * @author Kevin Villanova
+ * Classe principal — inicia a aplicação GUI.
  */
 public final class Loteria {
-  public final static Scanner SCANNER = new Scanner(System.in);
-
-  private static MenuPrincipal menuPrincipal = new MenuPrincipal();
-  private static MenuModalidades menuModalidades = new MenuModalidades();
-  private static MenuSorteios menuSorteios = new MenuSorteios();
 
   public static void main(String[] args) {
+    // inicializa a conexão com o banco (DAOs usarão Conexao quando necessário)
     new Conexao();
-    menuPrincipal.init();
+    // inicia a aplicação JavaFX
+    MainApp.main(args);
   }
 
-  public static MenuPrincipal getMenuPrincipal() {
-    return menuPrincipal;
-  }
-
-  public static MenuModalidades getMenuModalidades() {
-    return menuModalidades;
-  }
-
-  public static MenuSorteios getMenuSorteios() {
-    return menuSorteios;
-  }
 }
