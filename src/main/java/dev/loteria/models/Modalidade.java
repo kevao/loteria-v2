@@ -8,7 +8,7 @@ import dev.loteria.interfaces.Modelo;
  * @author Kevin Villanova
  */
 public class Modalidade implements Modelo {
-  private int id;
+  private java.util.UUID id;
   private String nome;
   private int numerosSorteio;
   private int menorBola;
@@ -25,7 +25,7 @@ public class Modalidade implements Modelo {
     this.descricao = descricao;
   }
 
-  public Modalidade(int id, String nome, int numerosSorteio, int menorBola, int maiorBola, double valorJogo,
+  public Modalidade(java.util.UUID id, String nome, int numerosSorteio, int menorBola, int maiorBola, double valorJogo,
       String descricao) {
     this.id = id;
     this.nome = nome;
@@ -36,11 +36,11 @@ public class Modalidade implements Modelo {
     this.descricao = descricao;
   }
 
-  public int getId() {
+  public java.util.UUID getId() {
     return id;
   }
 
-  public void setId(int id) {
+  public void setId(java.util.UUID id) {
     this.id = id;
   }
 

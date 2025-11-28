@@ -12,7 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Kevin Villanova
  */
 public class Sorteio {
-  int id;
+  java.util.UUID id;
   Set<Integer> numerosSorteados = new LinkedHashSet<>();
   Modalidade modalidade;
   LocalDateTime horario;
@@ -23,7 +23,7 @@ public class Sorteio {
     this.setHorario();
   }
 
-  public Sorteio(int id, Modalidade modalidade) {
+  public Sorteio(java.util.UUID id, Modalidade modalidade) {
     this.id = id;
     this.modalidade = modalidade;
     this.sortear();
@@ -46,11 +46,11 @@ public class Sorteio {
     this.horario = LocalDateTime.now();
   }
 
-  public int getId() {
+  public java.util.UUID getId() {
     return id;
   }
 
-  public void setId(int id) {
+  public void setId(java.util.UUID id) {
     this.id = id;
   }
 

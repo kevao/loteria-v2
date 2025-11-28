@@ -38,14 +38,17 @@ public class ModalidadeDao implements CRUD<Modalidade> {
    */
   public void criarTabela() {
     try {
+      // ensure uuid extension available
+      conexao.getConn().createStatement().executeUpdate("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";");
+
       String sql = """
           CREATE TABLE IF NOT EXISTS modalidades (
-          id INT AUTO_INCREMENT PRIMARY KEY,
+          id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
           nome VARCHAR(50) NOT NULL,
           numeros_sorteio INT NOT NULL,
           menor_bola INT NOT NULL,
           maior_bola INT NOT NULL,
-          valor_jogo DOUBLE NOT NULL,
+          valor_jogo DOUBLE PRECISION NOT NULL,
           descricao VARCHAR(255) NOT NULL
           );
           """;
@@ -65,9 +68,6 @@ public class ModalidadeDao implements CRUD<Modalidade> {
   public void criarMockups() {
     if (contar() != 0)
       return;
-
-    resetarAutoIncrement();
-
     System.out.println("Criando mockups de modalidades...");
 
     inserir(new Modalidade("Mega-Sena", 6, 1, 60, 6.0, "O jogo mais famoso do Brasil."));
@@ -77,11 +77,7 @@ public class ModalidadeDao implements CRUD<Modalidade> {
   }
 
   public void resetarAutoIncrement() {
-    try {
-      conexao.getConn().createStatement().executeUpdate("ALTER TABLE modalidades AUTO_INCREMENT = 1");
-    } catch (SQLException e) {
-      System.out.println("Ocorreu um erro ao resetar o AUTO_INCREMENT da tabela modalidades.");
-    }
+    // not needed for UUID primary keys
   }
 
   /*
@@ -90,11 +86,8 @@ public class ModalidadeDao implements CRUD<Modalidade> {
    * o próximo número.
    */
   public void inserir(Modalidade modalidade) {
-
-    resetarAutoIncrement();
-
     try {
-      String sql = "INSERT INTO modalidades (nome, numeros_sorteio, menor_bola, maior_bola, valor_jogo, descricao) VALUES (?, ?, ?, ?, ?, ?)";
+      String sql = "INSERT INTO modalidades (nome, numeros_sorteio, menor_bola, maior_bola, valor_jogo, descricao) VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
 
       ps = conexao.getConn().prepareStatement(sql);
 
@@ -105,12 +98,18 @@ public class ModalidadeDao implements CRUD<Modalidade> {
       ps.setDouble(5, modalidade.getValorJogo());
       ps.setString(6, modalidade.getDescricao());
 
-      ps.executeUpdate();
+      ResultSet rs = ps.executeQuery();
+      if (rs != null && rs.next()) {
+        java.util.UUID id = rs.getObject("id", java.util.UUID.class);
+        modalidade.setId(id);
+      }
+      if (rs != null)
+        rs.close();
 
       ps.close();
       System.out.println("Modalidade inserida com sucesso!");
     } catch (SQLException e) {
-      System.out.println("Ocorreu um erro ao inserir a modalidade");
+      System.out.println("Ocorreu um erro ao inserir a modalidade: " + e.getMessage());
     }
   }
 
@@ -136,7 +135,7 @@ public class ModalidadeDao implements CRUD<Modalidade> {
       ps.setInt(4, modalidade.getMaiorBola());
       ps.setDouble(5, modalidade.getValorJogo());
       ps.setString(6, modalidade.getDescricao());
-      ps.setInt(7, modalidade.getId());
+      ps.setObject(7, modalidade.getId());
 
       ps.executeUpdate();
 
@@ -154,7 +153,7 @@ public class ModalidadeDao implements CRUD<Modalidade> {
    * Se não existir, exibe uma mensagem informando que a modalidade não foi
    * encontrada.
    */
-  public void deletar(int id) {
+  public void deletar(java.util.UUID id) {
 
     if (!checkId(id)) {
       System.out.println("Modalidade com ID " + id + " não existe.");
@@ -164,22 +163,12 @@ public class ModalidadeDao implements CRUD<Modalidade> {
     try {
       String sql = "DELETE FROM modalidades WHERE id = ?";
       ps = conexao.getConn().prepareStatement(sql);
-      ps.setInt(1, id);
+      ps.setObject(1, id);
       ps.executeUpdate();
       ps.close();
       System.out.println("Modalidade deletada com sucesso!");
     } catch (SQLException ex) {
       System.out.println("Ocorreu um erro ao deletar a modalidade.");
-    }
-
-    try {
-      String updateSql = "UPDATE modalidades SET id = id - 1 WHERE id > ?";
-      ps = conexao.getConn().prepareStatement(updateSql);
-      ps.setInt(1, id);
-      ps.executeUpdate();
-      ps.close();
-    } catch (SQLException ex) {
-      System.out.println("Ocorreu um erro ao atualizar os IDs das modalidades.");
     }
   }
 
@@ -214,11 +203,11 @@ public class ModalidadeDao implements CRUD<Modalidade> {
    * @return true se o ID existir, false caso contrário.
    * 
    */
-  public boolean checkId(int id) {
+  public boolean checkId(java.util.UUID id) {
     try {
       String sql = "SELECT 1 FROM modalidades WHERE id = ?";
       ps = conexao.getConn().prepareStatement(sql);
-      ps.setInt(1, id);
+      ps.setObject(1, id);
       ResultSet rs = ps.executeQuery();
       boolean existe = rs.next();
       rs.close();
@@ -235,7 +224,7 @@ public class ModalidadeDao implements CRUD<Modalidade> {
    * Se o ID não existir, exibe uma mensagem informando que a modalidade não foi
    * encontrada.
    */
-  public Modalidade getById(int id) {
+  public Modalidade getById(java.util.UUID id) {
     if (!checkId(id)) {
       System.out.println("Modalidade com ID " + id + " não existe.");
       return null;
@@ -244,11 +233,11 @@ public class ModalidadeDao implements CRUD<Modalidade> {
     try {
       String sql = "SELECT * FROM modalidades WHERE id = ?";
       ps = conexao.getConn().prepareStatement(sql);
-      ps.setInt(1, id);
+      ps.setObject(1, id);
       ResultSet rs = ps.executeQuery();
       if (rs.next()) {
         Modalidade modalidade = new Modalidade(
-            rs.getInt("id"),
+            rs.getObject("id", java.util.UUID.class),
             rs.getString("nome"),
             rs.getInt("numeros_sorteio"),
             rs.getInt("menor_bola"),

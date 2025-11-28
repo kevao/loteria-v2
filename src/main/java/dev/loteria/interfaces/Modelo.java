@@ -1,7 +1,9 @@
 package dev.loteria.interfaces;
 
-public interface Modelo {
-  public int getId();
+import java.util.UUID;
 
-  public void setId(int id);
+public interface Modelo {
+  public UUID getId();
+
+  public void setId(UUID id);
 }

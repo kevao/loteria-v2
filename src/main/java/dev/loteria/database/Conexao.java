@@ -9,9 +9,10 @@ public class Conexao {
 
   public Conexao() {
     try {
-      String url = "jdbc:mysql://localhost:3306/loteria";
+      // Conecta ao PostgreSQL na porta 5442 (host +10 conforme solicitado)
+      String url = "jdbc:postgresql://localhost:5442/loteria";
       String usuario = "root";
-      String senha = "";
+      String senha = "rootpass";
       conn = DriverManager.getConnection(url, usuario, senha);
     } catch (SQLException e) {
       throw new RuntimeException("Erro ao conectar ao banco de dados", e);

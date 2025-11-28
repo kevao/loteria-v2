@@ -38,10 +38,10 @@ public class SorteioDao implements CRUD<Sorteio> {
     try {
       String sql = """
           CREATE TABLE IF NOT EXISTS sorteios (
-          id INT AUTO_INCREMENT PRIMARY KEY,
-          modalidade_id INT NOT NULL,
+          id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+          modalidade_id UUID NOT NULL,
           numeros_sorteados TEXT NOT NULL,
-          horario DATETIME NOT NULL,
+          horario TIMESTAMP NOT NULL,
           FOREIGN KEY (modalidade_id) REFERENCES modalidades(id)
           );
           """;
@@ -56,12 +56,18 @@ public class SorteioDao implements CRUD<Sorteio> {
    */
   public void inserir(Sorteio sorteio) {
     try {
-      String sql = "INSERT INTO sorteios (modalidade_id, horario, numeros_sorteados) VALUES (?, ?, ?)";
+      String sql = "INSERT INTO sorteios (modalidade_id, horario, numeros_sorteados) VALUES (?, ?, ?) RETURNING id";
       ps = conexao.getConn().prepareStatement(sql);
-      ps.setInt(1, sorteio.getModalidade().getId());
+      ps.setObject(1, sorteio.getModalidade().getId());
       ps.setTimestamp(2, java.sql.Timestamp.valueOf(sorteio.getHorario()));
       ps.setString(3, String.join("-", sorteio.getNumerosSorteados().stream().map(String::valueOf).toList()));
-      ps.executeUpdate();
+      ResultSet rs = ps.executeQuery();
+      if (rs != null && rs.next()) {
+        java.util.UUID id = rs.getObject("id", java.util.UUID.class);
+        sorteio.setId(id);
+      }
+      if (rs != null)
+        rs.close();
       ps.close();
       System.out.println("Sorteio realizado com sucesso!");
     } catch (SQLException e) {
@@ -76,7 +82,7 @@ public class SorteioDao implements CRUD<Sorteio> {
    * @param id ID do sorteio a ser deletado.
    * Se o ID não existir, exibe uma mensagem de erro.
    */
-  public void deletar(int id) {
+  public void deletar(java.util.UUID id) {
     if (!checkId(id)) {
       System.out.println("Sorteio com o ID informado não existe.");
       return;
@@ -85,7 +91,7 @@ public class SorteioDao implements CRUD<Sorteio> {
     try {
       String sql = "DELETE FROM sorteios WHERE id = ?";
       ps = conexao.getConn().prepareStatement(sql);
-      ps.setInt(1, id);
+      ps.setObject(1, id);
       ps.executeUpdate();
       ps.close();
       System.out.println("Sorteio deletado com sucesso!");
@@ -122,11 +128,11 @@ public class SorteioDao implements CRUD<Sorteio> {
    * @param id ID do sorteio a ser verificado.
    * @return true se o sorteio existir, false caso contrário.
    */
-  public boolean checkId(int id) {
+  public boolean checkId(java.util.UUID id) {
     try {
       String sql = "SELECT 1 FROM sorteios WHERE id = ?";
       ps = conexao.getConn().prepareStatement(sql);
-      ps.setInt(1, id);
+      ps.setObject(1, id);
       ResultSet rs = ps.executeQuery();
       boolean existe = rs.next();
       rs.close();

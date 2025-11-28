@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 
 import de.vandermeer.asciitable.AsciiTable;
 import de.vandermeer.asciitable.CWC_LongestLine;
-import dev.loteria.Loteria;
 import dev.loteria.dao.ModalidadeDao;
 import dev.loteria.interfaces.Servico;
 import dev.loteria.models.Modalidade;
@@ -85,7 +84,7 @@ public class ModalidadeService implements Servico {
   public void editar() {
     try {
       System.out.print("ID da modalidade a ser editada: ");
-      int id = Integer.parseInt(System.console().readLine());
+      java.util.UUID id = java.util.UUID.fromString(System.console().readLine());
 
       System.out.print("Novo nome da modalidade: ");
       String nome = System.console().readLine();
@@ -116,7 +115,7 @@ public class ModalidadeService implements Servico {
   public void deletar() {
     try {
       System.out.print("ID da modalidade a ser deletada: ");
-      int id = Integer.parseInt(System.console().readLine());
+      java.util.UUID id = java.util.UUID.fromString(System.console().readLine());
       modalidadeDao.deletar(id);
       System.out.println("Modalidade deletada com sucesso!");
     } catch (Exception e) {
@@ -126,6 +125,6 @@ public class ModalidadeService implements Servico {
   }
 
   public void retornarMenu() {
-    Loteria.getMenuModalidades().init();
+    // Console UI removed. GUI handles navigation — no-op here.
   }
 }

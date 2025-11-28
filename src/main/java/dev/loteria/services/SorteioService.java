@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 
 import de.vandermeer.asciitable.AsciiTable;
 import de.vandermeer.asciitable.CWC_LongestLine;
-import dev.loteria.Loteria;
 import dev.loteria.dao.ModalidadeDao;
 import dev.loteria.dao.SorteioDao;
 import dev.loteria.interfaces.Servico;
@@ -60,7 +59,7 @@ public class SorteioService implements Servico {
   public void inserir() {
     try {
       System.out.print("ID da modalidade para o sorteio: ");
-      int modalidadeId = Integer.parseInt(System.console().readLine());
+      java.util.UUID modalidadeId = java.util.UUID.fromString(System.console().readLine());
 
       Modalidade modalidade = modalidadeDao.getById(modalidadeId);
       if (modalidade == null) {
@@ -85,7 +84,7 @@ public class SorteioService implements Servico {
   public void deletar() {
     try {
       System.out.print("ID do sorteio a ser deletado: ");
-      int id = Integer.parseInt(System.console().readLine());
+      java.util.UUID id = java.util.UUID.fromString(System.console().readLine());
       sorteioDao.deletar(id);
     } catch (Exception e) {
       System.out.println("Erro ao deletar sorteio. Verifique o ID informado.");
@@ -94,6 +93,6 @@ public class SorteioService implements Servico {
   }
 
   public void retornarMenu() {
-    Loteria.getMenuSorteios().init();
+    // Console UI removed. GUI handles navigation — no-op here.
   }
 }

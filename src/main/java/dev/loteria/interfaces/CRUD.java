@@ -9,5 +9,5 @@ public interface CRUD<TModelo> {
 
   public void editar(TModelo modelo);
 
-  public void deletar(int id);
+  public void deletar(java.util.UUID id);
 }
