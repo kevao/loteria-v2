@@ -15,6 +15,7 @@ public class Modalidade implements Modelo {
   private int maiorBola;
   private String descricao;
   private double valorJogo;
+  private boolean ativo = true;
 
   public Modalidade(String nome, int numerosSorteio, int menorBola, int maiorBola, double valorJogo, String descricao) {
     this.nome = nome;
@@ -23,6 +24,7 @@ public class Modalidade implements Modelo {
     this.maiorBola = maiorBola;
     this.valorJogo = valorJogo;
     this.descricao = descricao;
+    this.ativo = true;
   }
 
   /**
@@ -36,8 +38,14 @@ public class Modalidade implements Modelo {
    * @param descricao      texto descritivo
    */
 
+  public Modalidade(String nome, int numerosSorteio, int menorBola, int maiorBola, double valorJogo, String descricao,
+      boolean ativo) {
+    this(nome, numerosSorteio, menorBola, maiorBola, valorJogo, descricao);
+    this.ativo = ativo;
+  }
+
   public Modalidade(java.util.UUID id, String nome, int numerosSorteio, int menorBola, int maiorBola, double valorJogo,
-      String descricao) {
+      String descricao, boolean ativo) {
     this.id = id;
     this.nome = nome;
     this.numerosSorteio = numerosSorteio;
@@ -45,6 +53,7 @@ public class Modalidade implements Modelo {
     this.maiorBola = maiorBola;
     this.valorJogo = valorJogo;
     this.descricao = descricao;
+    this.ativo = ativo;
   }
 
   /**
@@ -193,6 +202,14 @@ public class Modalidade implements Modelo {
     this.descricao = descricao;
   }
 
+  public boolean isAtivo() {
+    return ativo;
+  }
+
+  public void setAtivo(boolean ativo) {
+    this.ativo = ativo;
+  }
+
   /**
    * Define a descrição da modalidade.
    *
@@ -209,6 +226,7 @@ public class Modalidade implements Modelo {
         ", maiorBola=" + maiorBola +
         ", valorJogo=" + valorJogo +
         ", descricao='" + descricao + '\'' +
+        ", ativo=" + ativo +
         '}';
   }
 }

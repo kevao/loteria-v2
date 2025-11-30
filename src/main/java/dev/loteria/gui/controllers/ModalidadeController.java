@@ -1,5 +1,6 @@
 package dev.loteria.gui.controllers;
 
+import dev.loteria.dao.JogoDao;
 import dev.loteria.dao.ModalidadeDao;
 import dev.loteria.models.Modalidade;
 import javafx.beans.property.SimpleStringProperty;
@@ -11,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -57,12 +59,24 @@ public class ModalidadeController {
   private TableColumn<Modalidade, String> colDescricao;
 
   @FXML
+  private TableColumn<Modalidade, String> colAtivo;
+
+  @FXML
   private TableColumn<Modalidade, Void> colActions;
 
   @FXML
   private Button btnNew;
 
   private final ModalidadeDao dao = new ModalidadeDao();
+  private JogoDao jogoDao;
+
+  public ModalidadeController() {
+    try {
+      this.jogoDao = new JogoDao();
+    } catch (SQLException e) {
+      System.err.println("Não foi possível inicializar JogoDao: " + e.getMessage());
+    }
+  }
 
   @FXML
   public void initialize() {
@@ -88,6 +102,7 @@ public class ModalidadeController {
     });
 
     colDescricao.setCellValueFactory(new PropertyValueFactory<>("descricao"));
+    colAtivo.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().isAtivo() ? "Sim" : "Não"));
 
     btnNew.setOnAction(e -> openForm(null));
 
@@ -102,16 +117,7 @@ public class ModalidadeController {
     btnNew.setPrefHeight(34);
     btnNew.setTooltip(new Tooltip("Criar nova modalidade"));
 
-    // Larguras proporcionais (substitui uso de CONSTRAINED_RESIZE_POLICY)
-    // Aqui definimos proportions por coluna para manter comportamento previsível
-    // sem depender de API possivelmente deprecated. Ajuste percentuais conforme
-    // necessário.
-    colNome.prefWidthProperty().bind(tableModalidades.widthProperty().multiply(0.28));
-    colValor.prefWidthProperty().bind(tableModalidades.widthProperty().multiply(0.12));
-    colNumeros.prefWidthProperty().bind(tableModalidades.widthProperty().multiply(0.08));
-    colNumeracao.prefWidthProperty().bind(tableModalidades.widthProperty().multiply(0.12));
-    colDescricao.prefWidthProperty().bind(tableModalidades.widthProperty().multiply(0.30));
-    colActions.prefWidthProperty().bind(tableModalidades.widthProperty().multiply(0.10));
+    tableModalidades.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 
     // Larguras mínimas
     colNome.setMinWidth(160);
@@ -119,6 +125,7 @@ public class ModalidadeController {
     colNumeros.setMinWidth(80);
     colNumeracao.setMinWidth(90);
     colDescricao.setMinWidth(160);
+    colAtivo.setMinWidth(80);
 
     // Coluna de ações (ícones)
     colActions.setCellFactory(createActionsCellFactory());
@@ -168,17 +175,7 @@ public class ModalidadeController {
 
         delBtn.setOnAction(e -> {
           Modalidade m = getTableView().getItems().get(getIndex());
-          if (m == null)
-            return;
-          Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-          confirm.setTitle("Confirmar exclusão");
-          confirm.setHeaderText("Excluir modalidade");
-          confirm.setContentText("Deseja realmente excluir a modalidade '" + m.getNome() + "'?");
-          Optional<ButtonType> res = confirm.showAndWait();
-          if (res.isPresent() && res.get() == ButtonType.OK) {
-            dao.deletar(m.getId());
-            refreshTable();
-          }
+          handleDelete(m);
         });
       }
 
@@ -188,6 +185,68 @@ public class ModalidadeController {
         setGraphic(empty ? null : box);
       }
     };
+  }
+
+  private void handleDelete(Modalidade modalidade) {
+    if (modalidade == null)
+      return;
+
+    if (possuiJogos(modalidade)) {
+      boolean inativar = showInativarDialog(
+          "Modalidade com jogos",
+          "A modalidade '" + modalidade.getNome()
+              + "' possui jogos vendidos e não pode ser excluída. Deseja inativá-la?");
+      if (inativar) {
+        modalidade.setAtivo(false);
+        dao.editar(modalidade);
+        refreshTable();
+      }
+      return;
+    }
+
+    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+    confirm.setTitle("Confirmar exclusão");
+    confirm.setHeaderText("Excluir modalidade");
+    confirm.setContentText("Deseja realmente excluir a modalidade '" + modalidade.getNome() + "'?");
+    Optional<ButtonType> res = confirm.showAndWait();
+    if (res.isPresent() && res.get() == ButtonType.OK) {
+      dao.deletar(modalidade.getId());
+      refreshTable();
+    }
+  }
+
+  private boolean possuiJogos(Modalidade modalidade) {
+    if (modalidade == null || jogoDao == null)
+      return false;
+    try {
+      return jogoDao.existePorModalidade(modalidade.getId());
+    } catch (SQLException e) {
+      System.err.println("Erro ao verificar jogos da modalidade: " + e.getMessage());
+      return false;
+    }
+  }
+
+  private boolean showInativarDialog(String titulo, String mensagem) {
+    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+    alert.setTitle(titulo);
+    alert.setHeaderText(titulo);
+    alert.setContentText(mensagem);
+
+    ButtonType btnNao = new ButtonType("Não", ButtonBar.ButtonData.NO);
+    ButtonType btnSim = new ButtonType("Sim", ButtonBar.ButtonData.YES);
+    alert.getButtonTypes().setAll(btnNao, btnSim);
+
+    Button simButton = (Button) alert.getDialogPane().lookupButton(btnSim);
+    if (simButton != null) {
+      simButton.setStyle("-fx-background-color: #d32f2f; -fx-text-fill: white;");
+    }
+    Button naoButton = (Button) alert.getDialogPane().lookupButton(btnNao);
+    if (naoButton != null) {
+      naoButton.setStyle("-fx-background-color: #2e7d32; -fx-text-fill: white;");
+    }
+
+    Optional<ButtonType> result = alert.showAndWait();
+    return result.isPresent() && result.get() == btnSim;
   }
 
   private void refreshTable() {
@@ -204,7 +263,8 @@ public class ModalidadeController {
               rs.getInt("menor_bola"),
               rs.getInt("maior_bola"),
               rs.getDouble("valor_jogo"),
-              rs.getString("descricao"));
+              rs.getString("descricao"),
+              rs.getBoolean("ativo"));
           data.add(m);
         }
       }

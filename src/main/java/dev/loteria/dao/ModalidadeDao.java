@@ -59,7 +59,7 @@ public class ModalidadeDao implements CRUD<Modalidade> {
    */
   public void inserir(Modalidade modalidade) {
     try {
-      String sql = "INSERT INTO modalidades (nome, numeros_sorteio, menor_bola, maior_bola, valor_jogo, descricao) VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
+      String sql = "INSERT INTO modalidades (nome, numeros_sorteio, menor_bola, maior_bola, valor_jogo, descricao, ativo) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id";
 
       ps = conn.prepareStatement(sql);
 
@@ -69,6 +69,7 @@ public class ModalidadeDao implements CRUD<Modalidade> {
       ps.setInt(4, modalidade.getMaiorBola());
       ps.setDouble(5, modalidade.getValorJogo());
       ps.setString(6, modalidade.getDescricao());
+      ps.setBoolean(7, modalidade.isAtivo());
 
       ResultSet rs = ps.executeQuery();
       if (rs != null && rs.next()) {
@@ -99,7 +100,7 @@ public class ModalidadeDao implements CRUD<Modalidade> {
     }
 
     try {
-      String sql = "UPDATE modalidades SET nome = ?, numeros_sorteio = ?, menor_bola = ?, maior_bola = ?, valor_jogo = ?, descricao = ? WHERE id = ?";
+      String sql = "UPDATE modalidades SET nome = ?, numeros_sorteio = ?, menor_bola = ?, maior_bola = ?, valor_jogo = ?, descricao = ?, ativo = ? WHERE id = ?";
 
       ps = conn.prepareStatement(sql);
 
@@ -109,7 +110,8 @@ public class ModalidadeDao implements CRUD<Modalidade> {
       ps.setInt(4, modalidade.getMaiorBola());
       ps.setDouble(5, modalidade.getValorJogo());
       ps.setString(6, modalidade.getDescricao());
-      ps.setObject(7, modalidade.getId());
+      ps.setBoolean(7, modalidade.isAtivo());
+      ps.setObject(8, modalidade.getId());
 
       ps.executeUpdate();
 
@@ -213,7 +215,8 @@ public class ModalidadeDao implements CRUD<Modalidade> {
             rs.getInt("menor_bola"),
             rs.getInt("maior_bola"),
             rs.getDouble("valor_jogo"),
-            rs.getString("descricao"));
+            rs.getString("descricao"),
+            rs.getBoolean("ativo"));
         rs.close();
         ps.close();
         return modalidade;

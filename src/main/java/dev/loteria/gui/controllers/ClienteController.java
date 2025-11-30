@@ -1,6 +1,7 @@
 package dev.loteria.gui.controllers;
 
 import dev.loteria.dao.ClienteDao;
+import dev.loteria.dao.JogoDao;
 import dev.loteria.models.Cliente;
 // import javafx.beans.property.SimpleStringProperty; (unused)
 import javafx.fxml.FXML;
@@ -8,6 +9,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -22,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Controller para a tela de listagem de Clientes.
@@ -56,7 +60,16 @@ public class ClienteController {
   @FXML
   private Button btnNovo;
 
-  private ClienteDao dao = new ClienteDao();
+  private final ClienteDao dao = new ClienteDao();
+  private JogoDao jogoDao;
+
+  public ClienteController() {
+    try {
+      this.jogoDao = new JogoDao();
+    } catch (SQLException e) {
+      System.err.println("Não foi possível inicializar JogoDao em ClienteController: " + e.getMessage());
+    }
+  }
 
   /**
    * Inicializa o controller e configura a tabela.
@@ -201,11 +214,48 @@ public class ClienteController {
    * @param cliente o cliente a ser deletado
    */
   private void deleteCliente(Cliente cliente) {
+    if (cliente == null)
+      return;
+
     try {
+      if (jogoDao != null && jogoDao.existePorCliente(cliente.getId())) {
+        boolean inativar = showBlockedDialog(
+            "Cliente com jogos",
+            "O cliente '" + cliente.getNome()
+                + "' possui jogos registrados e não pode ser excluído. Deseja inativá-lo?");
+        if (inativar) {
+          cliente.setAtivo(false);
+          dao.editar(cliente);
+          refreshTable();
+        }
+        return;
+      }
       dao.deletar(cliente.getId());
       refreshTable();
+    } catch (SQLException e) {
+      System.err.println("Erro ao verificar jogos do cliente: " + e.getMessage());
     } catch (Exception e) {
       System.err.println("Erro ao deletar cliente: " + e.getMessage());
     }
+  }
+
+  private boolean showBlockedDialog(String titulo, String mensagem) {
+    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+    alert.setTitle(titulo);
+    alert.setHeaderText(titulo);
+    alert.setContentText(mensagem);
+    ButtonType btnNao = new ButtonType("Não", ButtonType.CANCEL.getButtonData());
+    ButtonType btnSim = new ButtonType("Sim", ButtonType.OK.getButtonData());
+    alert.getButtonTypes().setAll(btnNao, btnSim);
+    javafx.scene.control.Button simButton = (javafx.scene.control.Button) alert.getDialogPane().lookupButton(btnSim);
+    if (simButton != null) {
+      simButton.setStyle("-fx-background-color: #d32f2f; -fx-text-fill: white;");
+    }
+    javafx.scene.control.Button naoButton = (javafx.scene.control.Button) alert.getDialogPane().lookupButton(btnNao);
+    if (naoButton != null) {
+      naoButton.setStyle("-fx-background-color: #2e7d32; -fx-text-fill: white;");
+    }
+    Optional<ButtonType> result = alert.showAndWait();
+    return result.isPresent() && result.get() == btnSim;
   }
 }

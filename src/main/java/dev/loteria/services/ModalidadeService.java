@@ -43,7 +43,8 @@ public class ModalidadeService {
             rs.getInt("menor_bola"),
             rs.getInt("maior_bola"),
             rs.getDouble("valor_jogo"),
-            rs.getString("descricao"));
+            rs.getString("descricao"),
+            rs.getBoolean("ativo"));
         modalidades.add(m);
       }
       if (rs != null)

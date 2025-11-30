@@ -4,7 +4,7 @@
 <VBox xmlns:fx="http://javafx.com/fxml/1"
   fx:controller="dev.loteria.gui.controllers.ModalidadeFormController" spacing="8"
   style="-fx-padding: 12;"
-  styleClass="view-root">
+  styleClass="view-root modal-surface">
   <!-- O título da janela é definido pelo Stage; removido título duplicado aqui -->
   <GridPane hgap="8" vgap="8">
     <columnConstraints>
@@ -43,6 +43,10 @@
     <VBox spacing="4" GridPane.rowIndex="2" GridPane.columnIndex="0">
       <Label text="Descrição" />
       <TextArea fx:id="descricaoArea" prefRowCount="3" maxWidth="Infinity" />
+    </VBox>
+
+    <VBox spacing="4" GridPane.rowIndex="3" GridPane.columnIndex="0">
+      <CheckBox fx:id="ativoCheck" text="Modalidade ativa" selected="true" />
     </VBox>
   </GridPane>
 

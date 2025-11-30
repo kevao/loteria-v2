@@ -104,4 +104,26 @@ public class JogoDao {
     }
     return null;
   }
+
+  public boolean existePorModalidade(UUID modalidadeId) throws SQLException {
+    return existePorCampo("modalidade_id", modalidadeId);
+  }
+
+  public boolean existePorCliente(UUID clienteId) throws SQLException {
+    return existePorCampo("cliente_id", clienteId);
+  }
+
+  public boolean existePorFuncionario(UUID funcionarioId) throws SQLException {
+    return existePorCampo("funcionario_id", funcionarioId);
+  }
+
+  private boolean existePorCampo(String coluna, UUID id) throws SQLException {
+    String sql = "SELECT 1 FROM jogos WHERE " + coluna + " = ? LIMIT 1";
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setObject(1, id);
+      try (ResultSet rs = ps.executeQuery()) {
+        return rs.next();
+      }
+    }
+  }
 }

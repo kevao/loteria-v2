@@ -28,9 +28,12 @@ public class Migrations {
           "menor_bola INT NOT NULL," +
           "maior_bola INT NOT NULL," +
           "valor_jogo DOUBLE PRECISION NOT NULL," +
-          "descricao VARCHAR(255) NOT NULL" +
+          "descricao VARCHAR(255) NOT NULL," +
+          "ativo BOOLEAN NOT NULL DEFAULT true" +
           ")";
       st.execute(modalidades);
+      st.execute("ALTER TABLE modalidades ADD COLUMN IF NOT EXISTS ativo BOOLEAN NOT NULL DEFAULT true");
+      st.execute("CREATE UNIQUE INDEX IF NOT EXISTS ux_modalidades_nome ON modalidades (LOWER(nome))");
 
       // clientes
       String clientes = "CREATE TABLE IF NOT EXISTS clientes (" +

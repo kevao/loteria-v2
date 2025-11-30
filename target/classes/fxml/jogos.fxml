@@ -13,7 +13,11 @@
       <Label text="Jogos" styleClass="view-title" />
     </HBox>
     <Pane HBox.hgrow="ALWAYS" />
-    <Button fx:id="btnNovo" text="Novo Jogo" styleClass="primary-btn" />
+    <Button fx:id="btnNovo" text="Novo Jogo" styleClass="primary-btn">
+        <graphic>
+            <SVGPath content="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="#1a1a1a" />
+        </graphic>
+    </Button>
   </HBox>
 
   <TableView fx:id="tableView" prefHeight="500" VBox.vgrow="ALWAYS">

@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -51,11 +50,11 @@ public class SorteioService {
         Timestamp ts = rs.getTimestamp("horario");
         LocalDateTime horario = ts != null ? ts.toLocalDateTime() : null;
 
-        Set<Integer> numeros = Arrays.stream(numerosText.split("-"))
+        List<Integer> numeros = Arrays.stream(numerosText.split("-"))
             .map(String::trim)
             .filter(s -> !s.isEmpty())
             .map(Integer::parseInt)
-            .collect(Collectors.toSet());
+            .collect(Collectors.toList());
 
         SorteioDTO dto = new SorteioDTO(id, nomeModalidade, numeros, horario);
         sorteios.add(dto);
@@ -107,10 +106,10 @@ public class SorteioService {
   public static class SorteioDTO {
     private final java.util.UUID id;
     private final String nomeModalidade;
-    private final Set<Integer> numeros;
+    private final List<Integer> numeros;
     private final LocalDateTime horario;
 
-    public SorteioDTO(java.util.UUID id, String nomeModalidade, Set<Integer> numeros, LocalDateTime horario) {
+    public SorteioDTO(java.util.UUID id, String nomeModalidade, List<Integer> numeros, LocalDateTime horario) {
       this.id = id;
       this.nomeModalidade = nomeModalidade;
       this.numeros = numeros;
@@ -125,7 +124,7 @@ public class SorteioService {
       return nomeModalidade;
     }
 
-    public Set<Integer> getNumeros() {
+    public List<Integer> getNumeros() {
       return numeros;
     }
 

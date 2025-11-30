@@ -4,6 +4,7 @@ import dev.loteria.dao.ModalidadeDao;
 import dev.loteria.models.Modalidade;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -34,6 +35,9 @@ public class ModalidadeFormController {
 
   @FXML
   private TextArea descricaoArea;
+
+  @FXML
+  private CheckBox ativoCheck;
 
   @FXML
   private Button btnCancel;
@@ -115,8 +119,10 @@ public class ModalidadeFormController {
       NumberFormat nf = NumberFormat.getCurrencyInstance(java.util.Locale.forLanguageTag("pt-BR"));
       valorField.setText(nf.format(m.getValorJogo()));
       descricaoArea.setText(m.getDescricao());
+      ativoCheck.setSelected(m.isAtivo());
     } else {
       titleLabel.setText("Nova Modalidade");
+      ativoCheck.setSelected(true);
     }
   }
 
@@ -131,6 +137,7 @@ public class ModalidadeFormController {
     String maiorTxt = maiorField.getText();
     String valorTxt = valorField.getText();
     String descricao = descricaoArea.getText();
+    boolean ativo = ativoCheck.isSelected();
 
     if (nome == null || nome.isBlank()) {
       titleLabel.setText("Nome é obrigatório");
@@ -176,7 +183,7 @@ public class ModalidadeFormController {
       }
 
       if (modalidade == null) {
-        modalidade = new Modalidade(nome, numeros, menor, maior, valor, descricao == null ? "" : descricao);
+        modalidade = new Modalidade(nome, numeros, menor, maior, valor, descricao == null ? "" : descricao, ativo);
         dao.inserir(modalidade);
       } else {
         modalidade.setNome(nome);
@@ -185,6 +192,7 @@ public class ModalidadeFormController {
         modalidade.setMaiorBola(maior);
         modalidade.setValorJogo(valor);
         modalidade.setDescricao(descricao == null ? "" : descricao);
+        modalidade.setAtivo(ativo);
         dao.editar(modalidade);
       }
 

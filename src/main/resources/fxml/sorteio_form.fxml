@@ -3,7 +3,7 @@
 <?import javafx.scene.layout.*?>
 <VBox xmlns:fx="http://javafx.com/fxml/1"
   fx:controller="dev.loteria.gui.controllers.SorteioFormController" spacing="8"
-  style="-fx-padding: 12;" styleClass="view-root">
+  style="-fx-padding: 12;" styleClass="view-root modal-surface">
 
   <GridPane hgap="8" vgap="8">
     <columnConstraints>

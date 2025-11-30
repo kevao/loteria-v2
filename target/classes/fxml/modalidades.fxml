@@ -11,7 +11,11 @@
             <Label text="Modalidades" styleClass="view-title" />
         </HBox>
         <Pane HBox.hgrow="ALWAYS" />
-        <Button fx:id="btnNew" text="Novo" styleClass="primary-btn" />
+        <Button fx:id="btnNew" text="Novo" styleClass="primary-btn">
+            <graphic>
+                <SVGPath content="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="#1a1a1a" />
+            </graphic>
+        </Button>
     </HBox>
 
     <TableView fx:id="tableModalidades" prefHeight="500" VBox.vgrow="ALWAYS">
@@ -21,6 +25,7 @@
             <TableColumn fx:id="colNumeros" text="Bolas Sorteadas" />
             <TableColumn fx:id="colNumeracao" text="Numeração" />
             <TableColumn fx:id="colDescricao" text="Descrição" />
+            <TableColumn fx:id="colAtivo" text="Ativo?" />
             <TableColumn fx:id="colActions" text="" />
         </columns>
     </TableView>

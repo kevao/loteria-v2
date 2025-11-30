@@ -75,37 +75,85 @@ public class JogoFormController {
       ResultSet mrs = mDao.listar();
       java.util.List<Modalidade> ms = new java.util.ArrayList<>();
       while (mrs != null && mrs.next()) {
-        ms.add(mDao.getById(mrs.getObject("id", java.util.UUID.class)));
+        Modalidade modalidade = mDao.getById(mrs.getObject("id", java.util.UUID.class));
+        if (modalidade != null && modalidade.isAtivo()) {
+          ms.add(modalidade);
+        }
       }
       if (mrs != null)
         try {
           mrs.close();
         } catch (SQLException ignore) {
         }
+      if (jogo != null && jogo.getModalidade() != null) {
+        java.util.UUID selectedId = jogo.getModalidade().getId();
+        boolean contains = ms.stream().anyMatch(existing -> {
+          if (existing == null)
+            return false;
+          if (selectedId == null || existing.getId() == null)
+            return existing == jogo.getModalidade();
+          return selectedId.equals(existing.getId());
+        });
+        if (!contains) {
+          ms.add(jogo.getModalidade());
+        }
+      }
       modalidadeCombo.setItems(FXCollections.observableArrayList(ms));
 
       ResultSet crs = cDao.listar();
       java.util.List<Cliente> cs = new java.util.ArrayList<>();
       while (crs != null && crs.next()) {
-        cs.add(cDao.getById(crs.getObject("id", java.util.UUID.class)));
+        Cliente cliente = cDao.getById(crs.getObject("id", java.util.UUID.class));
+        if (cliente != null && cliente.isAtivo()) {
+          cs.add(cliente);
+        }
       }
       if (crs != null)
         try {
           crs.close();
         } catch (SQLException ignore) {
         }
+      if (jogo != null && jogo.getCliente() != null) {
+        java.util.UUID clienteId = jogo.getCliente().getId();
+        boolean containsCliente = cs.stream().anyMatch(existing -> {
+          if (existing == null)
+            return false;
+          if (clienteId == null || existing.getId() == null)
+            return existing == jogo.getCliente();
+          return clienteId.equals(existing.getId());
+        });
+        if (!containsCliente) {
+          cs.add(jogo.getCliente());
+        }
+      }
       clienteCombo.setItems(FXCollections.observableArrayList(cs));
 
       ResultSet frs = fDao.listar();
       java.util.List<Funcionario> fs = new java.util.ArrayList<>();
       while (frs != null && frs.next()) {
-        fs.add(fDao.getById(frs.getObject("id", java.util.UUID.class)));
+        Funcionario funcionario = fDao.getById(frs.getObject("id", java.util.UUID.class));
+        if (funcionario != null && funcionario.isAtivo()) {
+          fs.add(funcionario);
+        }
       }
       if (frs != null)
         try {
           frs.close();
         } catch (SQLException ignore) {
         }
+      if (jogo != null && jogo.getFuncionario() != null) {
+        java.util.UUID funcionarioId = jogo.getFuncionario().getId();
+        boolean containsFuncionario = fs.stream().anyMatch(existing -> {
+          if (existing == null)
+            return false;
+          if (funcionarioId == null || existing.getId() == null)
+            return existing == jogo.getFuncionario();
+          return funcionarioId.equals(existing.getId());
+        });
+        if (!containsFuncionario) {
+          fs.add(jogo.getFuncionario());
+        }
+      }
       funcionarioCombo.setItems(FXCollections.observableArrayList(fs));
     } catch (Exception e) {
       System.err.println("Erro ao carregar combos: " + e.getMessage());
