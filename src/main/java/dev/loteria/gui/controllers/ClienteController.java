@@ -258,6 +258,9 @@ public class ClienteController {
     alert.setTitle(titulo);
     alert.setHeaderText(titulo);
     alert.setContentText(mensagem);
+    // aplicar tema escuro ao diálogo
+    alert.getDialogPane().getStylesheets().add(getClass().getResource("/css/dark-theme.css").toExternalForm());
+    alert.getDialogPane().getStyleClass().add("modal-surface");
     ButtonType btnNao = new ButtonType("Não", ButtonType.CANCEL.getButtonData());
     ButtonType btnSim = new ButtonType("Sim", ButtonType.OK.getButtonData());
     alert.getButtonTypes().setAll(btnNao, btnSim);

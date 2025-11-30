@@ -107,6 +107,9 @@ public class JogoController {
             return;
           javafx.scene.control.Alert confirm = new javafx.scene.control.Alert(
               javafx.scene.control.Alert.AlertType.CONFIRMATION);
+          // aplicar tema escuro ao diálogo de confirmação
+          confirm.getDialogPane().getStylesheets().add(getClass().getResource("/css/dark-theme.css").toExternalForm());
+          confirm.getDialogPane().getStyleClass().add("modal-surface");
           confirm.setTitle("Confirmar exclusão");
           confirm.setHeaderText("Excluir jogo");
           confirm.setContentText("Deseja realmente deletar este jogo?");

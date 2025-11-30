@@ -223,6 +223,9 @@ public class ModalidadeController {
     confirm.setTitle("Confirmar exclusão");
     confirm.setHeaderText("Excluir modalidade");
     confirm.setContentText("Deseja realmente excluir a modalidade '" + modalidade.getNome() + "'?");
+    // aplicar tema escuro ao diálogo
+    confirm.getDialogPane().getStylesheets().add(getClass().getResource("/css/dark-theme.css").toExternalForm());
+    confirm.getDialogPane().getStyleClass().add("modal-surface");
     Optional<ButtonType> res = confirm.showAndWait();
     if (res.isPresent() && res.get() == ButtonType.OK) {
       dao.deletar(modalidade.getId());
@@ -246,6 +249,9 @@ public class ModalidadeController {
     alert.setTitle(titulo);
     alert.setHeaderText(titulo);
     alert.setContentText(mensagem);
+    // aplicar tema escuro ao diálogo
+    alert.getDialogPane().getStylesheets().add(getClass().getResource("/css/dark-theme.css").toExternalForm());
+    alert.getDialogPane().getStyleClass().add("modal-surface");
 
     ButtonType btnNao = new ButtonType("Não", ButtonBar.ButtonData.NO);
     ButtonType btnSim = new ButtonType("Sim", ButtonBar.ButtonData.YES);
@@ -323,6 +329,9 @@ public class ModalidadeController {
     Alert a = new Alert(Alert.AlertType.INFORMATION);
     a.setHeaderText(null);
     a.setContentText(msg);
+    // aplicar tema escuro ao diálogo informativo
+    a.getDialogPane().getStylesheets().add(getClass().getResource("/css/dark-theme.css").toExternalForm());
+    a.getDialogPane().getStyleClass().add("modal-surface");
     a.showAndWait();
   }
 }
