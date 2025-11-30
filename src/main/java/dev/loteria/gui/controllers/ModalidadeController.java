@@ -59,7 +59,7 @@ public class ModalidadeController {
   private TableColumn<Modalidade, String> colDescricao;
 
   @FXML
-  private TableColumn<Modalidade, String> colAtivo;
+  private TableColumn<Modalidade, Boolean> colAtivo;
 
   @FXML
   private TableColumn<Modalidade, Void> colActions;
@@ -102,20 +102,35 @@ public class ModalidadeController {
     });
 
     colDescricao.setCellValueFactory(new PropertyValueFactory<>("descricao"));
-    colAtivo.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().isAtivo() ? "Sim" : "Não"));
+
+    colAtivo.setCellValueFactory(new PropertyValueFactory<>("ativo"));
+    colAtivo.setCellFactory(col -> new TableCell<Modalidade, Boolean>() {
+      @Override
+      protected void updateItem(Boolean item, boolean empty) {
+        super.updateItem(item, empty);
+        if (empty || item == null) {
+          setGraphic(null);
+          setText(null);
+        } else {
+          SVGPath icon = new SVGPath();
+          if (item) {
+            // Check icon
+            icon.setContent("M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z");
+            icon.setStyle("-fx-fill: #4CAF50;");
+          } else {
+            // X icon
+            icon.setContent(
+                "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z");
+            icon.setStyle("-fx-fill: #F44336;");
+          }
+          setGraphic(icon);
+          setText(null);
+          setAlignment(Pos.CENTER);
+        }
+      }
+    });
 
     btnNew.setOnAction(e -> openForm(null));
-
-    // Ajustes visuais do botão "Novo" para combinar com os botões de ação
-    btnNew.setText("Nova modalidade");
-    SVGPath plus = new SVGPath();
-    plus.setContent("M19 13H13V19H11V13H5V11H11V5h2v6h6v2z");
-    plus.getStyleClass().add("action-icon");
-    btnNew.setGraphic(plus);
-    btnNew.getStyleClass().add("action-btn");
-    btnNew.setMinWidth(100);
-    btnNew.setPrefHeight(34);
-    btnNew.setTooltip(new Tooltip("Criar nova modalidade"));
 
     tableModalidades.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 
@@ -145,14 +160,14 @@ public class ModalidadeController {
             "M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c0.39-0.39 0.39-1.02 0-1.41l-2.34-2.34c-0.39-0.39-1.02-0.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z");
         pencil.getStyleClass().add("action-icon");
         editBtn.setGraphic(pencil);
-        editBtn.getStyleClass().add("action-btn");
+        editBtn.getStyleClass().addAll("action-btn", "action-btn--edit");
         editBtn.setTooltip(new Tooltip("Editar"));
 
         SVGPath trash = new SVGPath();
         trash.setContent("M6 19c0 1.1 0.9 2 2 2h8c1.1 0 2-0.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z");
         trash.getStyleClass().add("action-icon");
         delBtn.setGraphic(trash);
-        delBtn.getStyleClass().addAll("action-btn", "delete");
+        delBtn.getStyleClass().addAll("action-btn", "action-btn--delete");
         delBtn.setTooltip(new Tooltip("Excluir"));
 
         editBtn.setMinWidth(34);
@@ -289,10 +304,14 @@ public class ModalidadeController {
       controller.setModalidade(modalidade);
       controller.setOnSaved(m -> refreshTable());
 
+      Scene scene = new Scene(root);
+      // aplicar o tema padrão para consistência visual
+      scene.getStylesheets().add(getClass().getResource("/css/dark-theme.css").toExternalForm());
+
       Stage stage = new Stage();
       stage.initModality(Modality.APPLICATION_MODAL);
       stage.setTitle(modalidade == null ? "Nova Modalidade" : "Editar Modalidade");
-      stage.setScene(new Scene(root));
+      stage.setScene(scene);
       stage.showAndWait();
     } catch (IOException ex) {
       ex.printStackTrace();

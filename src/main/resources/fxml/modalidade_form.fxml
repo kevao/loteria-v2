@@ -26,17 +26,17 @@
 
       <VBox spacing="4" HBox.hgrow="ALWAYS" maxWidth="Infinity">
         <Label text="Bolas Sorteadas" />
-        <TextField fx:id="numerosField" maxWidth="Infinity" promptText="6" />
+        <TextField fx:id="numerosField" maxWidth="Infinity" promptText="ex: 6" />
       </VBox>
 
       <VBox spacing="4" HBox.hgrow="ALWAYS" maxWidth="Infinity">
         <Label text="Menor bola" />
-        <TextField fx:id="menorField" maxWidth="Infinity" promptText="0" />
+        <TextField fx:id="menorField" maxWidth="Infinity" promptText="ex: 0" />
       </VBox>
 
       <VBox spacing="4" HBox.hgrow="ALWAYS" maxWidth="Infinity">
         <Label text="Maior bola" />
-        <TextField fx:id="maiorField" maxWidth="Infinity" promptText="99" />
+        <TextField fx:id="maiorField" maxWidth="Infinity" promptText="ex: 99" />
       </VBox>
     </HBox>
 

@@ -7,13 +7,14 @@
     styleClass="view-root" style="-fx-padding: 10;">
     <HBox alignment="CENTER_LEFT" spacing="8">
         <HBox alignment="CENTER_LEFT" spacing="8">
-            <SVGPath content="M8,0 A8,8 0 1,0 8.001,0 Z" styleClass="view-icon" />
+            <SVGPath styleClass="view-icon"
+                content="M3 3h4v4H3V3zm6 0h4v4H9V3zm6 0h4v4h-4V3zM3 9h4v4H3V9zm6 0h4v4H9V9zm6 0h4v4h-4V9zM3 15h4v4H3v-4zm6 0h4v4H9v-4zm6 0h4v4h-4v-4z" />
             <Label text="Modalidades" styleClass="view-title" />
         </HBox>
         <Pane HBox.hgrow="ALWAYS" />
-        <Button fx:id="btnNew" text="Novo" styleClass="primary-btn">
+        <Button fx:id="btnNew" text="Nova Modalidade" styleClass="primary-btn">
             <graphic>
-                <SVGPath content="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="#1a1a1a" />
+                <SVGPath content="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="#ffffff" />
             </graphic>
         </Button>
     </HBox>

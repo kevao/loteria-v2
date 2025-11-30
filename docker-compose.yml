@@ -6,14 +6,25 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_DB: loteria
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-    # Executa o Postgres dentro do container ouvindo na porta 5442
-    command: ["postgres", "-c", "port=5442"]
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: rootpass
     ports:
-      - "5442:5442"
+      - "5442:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - loteria
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "5555:8080"
+    networks:
+      - loteria
 
 volumes:
   pgdata:
+
+networks:
+  loteria:

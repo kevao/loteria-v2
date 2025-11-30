@@ -2,11 +2,13 @@ package dev.loteria.gui.controllers;
 
 import dev.loteria.dao.FuncionarioDao;
 import dev.loteria.models.Funcionario;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.stage.Stage;
 
 import java.text.NumberFormat;
@@ -64,6 +66,75 @@ public class FuncionarioFormController {
   public void initialize() {
     btnCancel.setOnAction(e -> closeWindow());
     btnSave.setOnAction(e -> save());
+
+    // Flags para evitar reentrância durante a formatação
+    final AtomicBoolean cpfChanging = new AtomicBoolean(false);
+    final AtomicBoolean telChanging = new AtomicBoolean(false);
+
+    // Máscara CPF (segura com Platform.runLater e flag)
+    cpfField.textProperty().addListener((obs, oldVal, newVal) -> {
+      if (newVal == null || newVal.equals(oldVal) || cpfChanging.get())
+        return;
+      String digits = newVal.replaceAll("[^0-9]", "");
+      if (digits.length() > 11)
+        digits = digits.substring(0, 11);
+
+      String formatted;
+      if (digits.length() <= 3) {
+        formatted = digits;
+      } else if (digits.length() <= 6) {
+        formatted = digits.substring(0, 3) + "." + digits.substring(3);
+      } else if (digits.length() <= 9) {
+        formatted = digits.substring(0, 3) + "." + digits.substring(3, 6) + "." + digits.substring(6);
+      } else {
+        formatted = digits.substring(0, 3) + "." + digits.substring(3, 6) + "." + digits.substring(6, 9) + "-"
+            + digits.substring(9);
+      }
+
+      if (!newVal.equals(formatted)) {
+        final int caret = cpfField.getCaretPosition();
+        cpfChanging.set(true);
+        Platform.runLater(() -> {
+          cpfField.setText(formatted);
+          int pos = Math.max(0, Math.min(formatted.length(), caret));
+          cpfField.positionCaret(pos);
+          cpfChanging.set(false);
+        });
+      }
+    });
+
+    // Máscara Telefone (segura com Platform.runLater e flag)
+    telefoneField.textProperty().addListener((obs, oldVal, newVal) -> {
+      if (newVal == null || newVal.equals(oldVal) || telChanging.get())
+        return;
+      String digits = newVal.replaceAll("[^0-9]", "");
+      if (digits.length() > 11)
+        digits = digits.substring(0, 11);
+
+      String formatted;
+      if (digits.length() == 0) {
+        formatted = "";
+      } else if (digits.length() <= 2) {
+        formatted = "(" + digits;
+      } else if (digits.length() <= 6) {
+        formatted = "(" + digits.substring(0, 2) + ") " + digits.substring(2);
+      } else if (digits.length() <= 10) {
+        formatted = "(" + digits.substring(0, 2) + ") " + digits.substring(2, 6) + "-" + digits.substring(6);
+      } else {
+        formatted = "(" + digits.substring(0, 2) + ") " + digits.substring(2, 7) + "-" + digits.substring(7);
+      }
+
+      if (!newVal.equals(formatted)) {
+        final int caret = telefoneField.getCaretPosition();
+        telChanging.set(true);
+        Platform.runLater(() -> {
+          telefoneField.setText(formatted);
+          int pos = Math.max(0, Math.min(formatted.length(), caret));
+          telefoneField.positionCaret(pos);
+          telChanging.set(false);
+        });
+      }
+    });
 
     // Máscara para campo de salário (digitação em centavos -> formata como R$
     // x.xxx,yy)

@@ -28,12 +28,15 @@
         <Label text="Funcionário" />
         <ComboBox fx:id="funcionarioCombo" promptText="Escolha o funcionário" />
       </VBox>
-
-      <VBox spacing="4" HBox.hgrow="ALWAYS">
-        <Label text="Números (CSV)" />
-        <TextField fx:id="numerosField" promptText="ex: 1,2,3,4,5" />
-      </VBox>
     </HBox>
+
+    <VBox spacing="4" GridPane.rowIndex="2" GridPane.columnIndex="0">
+      <Label fx:id="lblInstrucaoNumeros" text="Selecione uma modalidade para ver os números" />
+      <ScrollPane fitToWidth="true" prefHeight="200"
+        style="-fx-background-color: transparent; -fx-background: transparent;">
+        <FlowPane fx:id="numerosFlowPane" hgap="8" vgap="8" />
+      </ScrollPane>
+    </VBox>
 
   </GridPane>
 

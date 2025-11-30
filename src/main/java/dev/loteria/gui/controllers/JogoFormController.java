@@ -13,8 +13,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,6 +33,9 @@ public class JogoFormController {
   private Label titleLabel;
 
   @FXML
+  private Label lblInstrucaoNumeros;
+
+  @FXML
   private ComboBox<Modalidade> modalidadeCombo;
 
   @FXML
@@ -40,7 +45,7 @@ public class JogoFormController {
   private ComboBox<Funcionario> funcionarioCombo;
 
   @FXML
-  private TextField numerosField;
+  private FlowPane numerosFlowPane;
 
   @FXML
   private Button btnCancel;
@@ -67,7 +72,85 @@ public class JogoFormController {
   public void initialize() {
     btnCancel.setOnAction(e -> closeWindow());
     btnSave.setOnAction(e -> save());
+    
+    setupConverters();
+
+    modalidadeCombo.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+        generateNumberGrid(newVal);
+    });
+    
     loadCombos();
+  }
+
+  private void setupConverters() {
+      modalidadeCombo.setConverter(new StringConverter<Modalidade>() {
+          @Override
+          public String toString(Modalidade object) {
+              return object == null ? null : object.getNome();
+          }
+          @Override
+          public Modalidade fromString(String string) {
+              return null;
+          }
+      });
+
+      clienteCombo.setConverter(new StringConverter<Cliente>() {
+          @Override
+          public String toString(Cliente object) {
+              return object == null ? null : object.getNome();
+          }
+          @Override
+          public Cliente fromString(String string) {
+              return null;
+          }
+      });
+
+      funcionarioCombo.setConverter(new StringConverter<Funcionario>() {
+          @Override
+          public String toString(Funcionario object) {
+              return object == null ? null : object.getNome();
+          }
+          @Override
+          public Funcionario fromString(String string) {
+              return null;
+          }
+      });
+  }
+
+  private void generateNumberGrid(Modalidade modalidade) {
+      numerosFlowPane.getChildren().clear();
+      
+      if (modalidade == null) {
+          lblInstrucaoNumeros.setText("Selecione uma modalidade para ver os números");
+          return;
+      }
+
+      lblInstrucaoNumeros.setText("Escolha " + modalidade.getNumerosSorteio() + " números");
+
+      int min = modalidade.getMenorBola();
+      int max = modalidade.getMaiorBola();
+      
+      // Se já houver um jogo carregado e a modalidade for a mesma, recupera os números selecionados
+      Set<Integer> selectedNumbers = new LinkedHashSet<>();
+      if (jogo != null && jogo.getModalidade() != null && jogo.getModalidade().getId().equals(modalidade.getId())) {
+          selectedNumbers.addAll(jogo.getNumeros());
+      }
+
+      for (int i = min; i <= max; i++) {
+          ToggleButton btn = new ToggleButton(String.valueOf(i));
+          btn.setPrefWidth(40);
+          btn.setPrefHeight(40);
+          final int num = i;
+          
+          if (selectedNumbers.contains(num)) {
+              btn.setSelected(true);
+          }
+          
+          // Lógica de seleção (opcional: limitar quantidade de números selecionados)
+          // Por enquanto, livre seleção
+          
+          numerosFlowPane.getChildren().add(btn);
+      }
   }
 
   private void loadCombos() {
@@ -167,9 +250,11 @@ public class JogoFormController {
       modalidadeCombo.getSelectionModel().select(j.getModalidade());
       clienteCombo.getSelectionModel().select(j.getCliente());
       funcionarioCombo.getSelectionModel().select(j.getFuncionario());
-      numerosField.setText(j.getNumeros().toString().replace("[", "").replace("]", "").replace(" ", ""));
+      // A grid será gerada pelo listener do combo box
     } else {
       titleLabel.setText("Novo Jogo");
+      lblInstrucaoNumeros.setText("Selecione uma modalidade para ver os números");
+      numerosFlowPane.getChildren().clear();
     }
   }
 
@@ -181,20 +266,24 @@ public class JogoFormController {
     Modalidade m = modalidadeCombo.getValue();
     Cliente c = clienteCombo.getValue();
     Funcionario f = funcionarioCombo.getValue();
-    String nums = numerosField.getText();
+    
     if (m == null || c == null || f == null) {
       titleLabel.setText("Modalidade/Cliente/Funcionário obrigatórios");
       return;
     }
+    
     Set<Integer> set = new LinkedHashSet<>();
-    if (nums != null && !nums.isBlank()) {
-      for (String s : nums.split(",")) {
-        try {
-          set.add(Integer.parseInt(s.trim()));
-        } catch (NumberFormatException ex) {
+    numerosFlowPane.getChildren().forEach(node -> {
+        if (node instanceof ToggleButton) {
+            ToggleButton btn = (ToggleButton) node;
+            if (btn.isSelected()) {
+                try {
+                    set.add(Integer.parseInt(btn.getText()));
+                } catch (NumberFormatException ex) {}
+            }
         }
-      }
-    }
+    });
+
     try {
       if (jogo == null) {
         jogo = new Jogo(m, c, f, set);

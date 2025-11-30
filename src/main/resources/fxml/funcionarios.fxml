@@ -15,7 +15,7 @@
     <Pane HBox.hgrow="ALWAYS" />
     <Button fx:id="btnNovo" text="Novo Funcionário" styleClass="primary-btn">
       <graphic>
-        <SVGPath content="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="#1a1a1a" />
+        <SVGPath content="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="#fff" />
       </graphic>
     </Button>
   </HBox>
