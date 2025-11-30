@@ -72,85 +72,110 @@ public class JogoFormController {
   public void initialize() {
     btnCancel.setOnAction(e -> closeWindow());
     btnSave.setOnAction(e -> save());
-    
+
     setupConverters();
 
     modalidadeCombo.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-        generateNumberGrid(newVal);
+      generateNumberGrid(newVal);
     });
-    
+
     loadCombos();
   }
 
   private void setupConverters() {
-      modalidadeCombo.setConverter(new StringConverter<Modalidade>() {
-          @Override
-          public String toString(Modalidade object) {
-              return object == null ? null : object.getNome();
-          }
-          @Override
-          public Modalidade fromString(String string) {
-              return null;
-          }
-      });
+    modalidadeCombo.setConverter(new StringConverter<Modalidade>() {
+      @Override
+      public String toString(Modalidade object) {
+        return object == null ? null : object.getNome();
+      }
 
-      clienteCombo.setConverter(new StringConverter<Cliente>() {
-          @Override
-          public String toString(Cliente object) {
-              return object == null ? null : object.getNome();
-          }
-          @Override
-          public Cliente fromString(String string) {
-              return null;
-          }
-      });
+      @Override
+      public Modalidade fromString(String string) {
+        return null;
+      }
+    });
 
-      funcionarioCombo.setConverter(new StringConverter<Funcionario>() {
-          @Override
-          public String toString(Funcionario object) {
-              return object == null ? null : object.getNome();
-          }
-          @Override
-          public Funcionario fromString(String string) {
-              return null;
-          }
-      });
+    clienteCombo.setConverter(new StringConverter<Cliente>() {
+      @Override
+      public String toString(Cliente object) {
+        return object == null ? null : object.getNome();
+      }
+
+      @Override
+      public Cliente fromString(String string) {
+        return null;
+      }
+    });
+
+    funcionarioCombo.setConverter(new StringConverter<Funcionario>() {
+      @Override
+      public String toString(Funcionario object) {
+        return object == null ? null : object.getNome();
+      }
+
+      @Override
+      public Funcionario fromString(String string) {
+        return null;
+      }
+    });
   }
 
   private void generateNumberGrid(Modalidade modalidade) {
-      numerosFlowPane.getChildren().clear();
-      
-      if (modalidade == null) {
-          lblInstrucaoNumeros.setText("Selecione uma modalidade para ver os números");
-          return;
+    numerosFlowPane.getChildren().clear();
+
+    if (modalidade == null) {
+      lblInstrucaoNumeros.setText("Selecione uma modalidade para ver os números");
+      return;
+    }
+
+    lblInstrucaoNumeros.setText("Escolha " + modalidade.getNumerosSorteio() + " números");
+
+    int min = modalidade.getMenorBola();
+    int max = modalidade.getMaiorBola();
+
+    // Se já houver um jogo carregado e a modalidade for a mesma, recupera os
+    // números selecionados
+    Set<Integer> selectedNumbers = new LinkedHashSet<>();
+    if (jogo != null && jogo.getModalidade() != null && jogo.getModalidade().getId().equals(modalidade.getId())) {
+      selectedNumbers.addAll(jogo.getNumeros());
+    }
+
+    for (int i = min; i <= max; i++) {
+      ToggleButton btn = new ToggleButton(String.valueOf(i));
+      btn.setPrefWidth(40);
+      btn.setPrefHeight(40);
+      final int num = i;
+
+      if (selectedNumbers.contains(num)) {
+        btn.setSelected(true);
       }
-
-      lblInstrucaoNumeros.setText("Escolha " + modalidade.getNumerosSorteio() + " números");
-
-      int min = modalidade.getMenorBola();
-      int max = modalidade.getMaiorBola();
-      
-      // Se já houver um jogo carregado e a modalidade for a mesma, recupera os números selecionados
-      Set<Integer> selectedNumbers = new LinkedHashSet<>();
-      if (jogo != null && jogo.getModalidade() != null && jogo.getModalidade().getId().equals(modalidade.getId())) {
-          selectedNumbers.addAll(jogo.getNumeros());
-      }
-
-      for (int i = min; i <= max; i++) {
-          ToggleButton btn = new ToggleButton(String.valueOf(i));
-          btn.setPrefWidth(40);
-          btn.setPrefHeight(40);
-          final int num = i;
-          
-          if (selectedNumbers.contains(num)) {
-              btn.setSelected(true);
+      // Lógica de seleção: impede escolher mais do que o permitido
+      btn.selectedProperty().addListener((obsSel, oldSel, newSel) -> {
+        if (newSel) {
+          long currently = numerosFlowPane.getChildren().stream()
+              .filter(n -> n instanceof ToggleButton)
+              .map(n -> (ToggleButton) n)
+              .filter(ToggleButton::isSelected)
+              .count();
+          int limit = modalidade.getNumerosSorteio();
+          // currently já inclui a seleção atual apenas se change has already toggled;
+          // to be safe, compute previous count
+          long previous = currently - 1;
+          if (previous >= limit) {
+            // não permite selecionar mais
+            btn.setSelected(false);
+            titleLabel.setText("Só é permitido escolher " + limit + " números");
+          } else {
+            titleLabel.setText("");
           }
-          
-          // Lógica de seleção (opcional: limitar quantidade de números selecionados)
-          // Por enquanto, livre seleção
-          
-          numerosFlowPane.getChildren().add(btn);
-      }
+        } else {
+          // ao desmarcar, limpa mensagens
+          titleLabel.setText("");
+        }
+      });
+
+      numerosFlowPane.getChildren().add(btn);
+    }
   }
 
   private void loadCombos() {
@@ -266,23 +291,30 @@ public class JogoFormController {
     Modalidade m = modalidadeCombo.getValue();
     Cliente c = clienteCombo.getValue();
     Funcionario f = funcionarioCombo.getValue();
-    
+
     if (m == null || c == null || f == null) {
       titleLabel.setText("Modalidade/Cliente/Funcionário obrigatórios");
       return;
     }
-    
+
     Set<Integer> set = new LinkedHashSet<>();
     numerosFlowPane.getChildren().forEach(node -> {
-        if (node instanceof ToggleButton) {
-            ToggleButton btn = (ToggleButton) node;
-            if (btn.isSelected()) {
-                try {
-                    set.add(Integer.parseInt(btn.getText()));
-                } catch (NumberFormatException ex) {}
-            }
+      if (node instanceof ToggleButton) {
+        ToggleButton btn = (ToggleButton) node;
+        if (btn.isSelected()) {
+          try {
+            set.add(Integer.parseInt(btn.getText()));
+          } catch (NumberFormatException ex) {
+          }
         }
+      }
     });
+
+    // validação: deve ter exatamente a quantidade definida pela modalidade
+    if (set.size() != m.getNumerosSorteio()) {
+      titleLabel.setText("Escolha exatamente " + m.getNumerosSorteio() + " números");
+      return;
+    }
 
     try {
       if (jogo == null) {

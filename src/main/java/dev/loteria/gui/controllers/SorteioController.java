@@ -50,8 +50,16 @@ public class SorteioController {
     public void initialize() {
         colModalidade.setCellValueFactory(
                 dto -> new javafx.beans.property.SimpleStringProperty(dto.getValue().getNomeModalidade()));
-        colNumeros.setCellValueFactory(
-                dto -> new javafx.beans.property.SimpleStringProperty(dto.getValue().getNumeros().toString()));
+        colNumeros.setCellValueFactory(dto -> {
+            List<?> nums = dto.getValue().getNumeros();
+            String joined = "";
+            if (nums != null && !nums.isEmpty()) {
+                joined = nums.stream()
+                        .map(Object::toString)
+                        .collect(java.util.stream.Collectors.joining("-"));
+            }
+            return new javafx.beans.property.SimpleStringProperty(joined);
+        });
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         colHorario.setCellValueFactory(dto -> new javafx.beans.property.SimpleStringProperty(
                 dto.getValue().getHorario() == null ? "" : dto.getValue().getHorario().format(fmt)));

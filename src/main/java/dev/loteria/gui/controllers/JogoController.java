@@ -78,8 +78,16 @@ public class JogoController {
         .setCellValueFactory(j -> new javafx.beans.property.SimpleStringProperty(j.getValue().getCliente().getNome()));
     colFuncionario.setCellValueFactory(
         j -> new javafx.beans.property.SimpleStringProperty(j.getValue().getFuncionario().getNome()));
-    colNumeros
-        .setCellValueFactory(j -> new javafx.beans.property.SimpleStringProperty(j.getValue().getNumeros().toString()));
+    colNumeros.setCellValueFactory(j -> {
+      java.util.Set<Integer> nums = j.getValue().getNumeros();
+      String joined = "";
+      if (nums != null && !nums.isEmpty()) {
+        joined = nums.stream()
+            .map(Object::toString)
+            .collect(java.util.stream.Collectors.joining("-"));
+      }
+      return new javafx.beans.property.SimpleStringProperty(joined);
+    });
     DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     colData.setCellValueFactory(
         j -> new javafx.beans.property.SimpleStringProperty(j.getValue().getDataCompra().format(fmt)));
@@ -95,10 +103,21 @@ public class JogoController {
         btnDelete.getStyleClass().addAll("action-btn", "action-btn--delete");
         btnDelete.setOnAction(e -> {
           Jogo jogo = getTableView().getItems().get(getIndex());
-          try {
-            dao.inserir(jogo); // NOTE: no delete implemented yet in JogoDao; placeholder if needed
-          } catch (SQLException ex) {
-            System.err.println("Erro operacao jogo: " + ex.getMessage());
+          if (jogo == null)
+            return;
+          javafx.scene.control.Alert confirm = new javafx.scene.control.Alert(
+              javafx.scene.control.Alert.AlertType.CONFIRMATION);
+          confirm.setTitle("Confirmar exclusão");
+          confirm.setHeaderText("Excluir jogo");
+          confirm.setContentText("Deseja realmente deletar este jogo?");
+          java.util.Optional<javafx.scene.control.ButtonType> opt = confirm.showAndWait();
+          if (opt.isPresent() && opt.get() == javafx.scene.control.ButtonType.OK) {
+            try {
+              dao.deletar(jogo.getId());
+              refreshTable();
+            } catch (SQLException ex) {
+              System.err.println("Erro ao deletar jogo: " + ex.getMessage());
+            }
           }
         });
         container.setAlignment(Pos.CENTER);

@@ -24,6 +24,20 @@ public class JogoDao {
   }
 
   /**
+   * Remove um jogo pelo seu UUID.
+   *
+   * @param id UUID do jogo a ser removido
+   * @throws SQLException em caso de erro na operação
+   */
+  public void deletar(java.util.UUID id) throws SQLException {
+    String sql = "DELETE FROM jogos WHERE id = ?";
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setObject(1, id);
+      ps.executeUpdate();
+    }
+  }
+
+  /**
    * Construtor do DAO de jogos, inicializa a conexão.
    *
    * @throws SQLException se ocorrer erro na obtenção da conexão
