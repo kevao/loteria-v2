@@ -88,4 +88,20 @@ public class JogoDao {
     }
     return 0;
   }
+
+  /**
+   * Retorna todos os jogos como um {@link ResultSet}. A carga de objetos
+   * completos (Modalidade/Cliente/Funcionario) pode ser feita pelo
+   * controller utilizando os respectivos DAOs.
+   *
+   * @return ResultSet com os registros de `jogos` ou `null` em caso de erro
+   */
+  public ResultSet listar() {
+    try {
+      return conn.createStatement().executeQuery("SELECT * FROM jogos ORDER BY data_compra DESC");
+    } catch (SQLException e) {
+      System.out.println("Ocorreu um erro ao listar jogos: " + e.getMessage());
+    }
+    return null;
+  }
 }

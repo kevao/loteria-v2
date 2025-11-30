@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="dev.loteria.gui.controllers.SorteioFormController" spacing="8"
+  style="-fx-padding: 12;" styleClass="view-root">
+
+  <GridPane hgap="8" vgap="8">
+    <columnConstraints>
+      <ColumnConstraints hgrow="ALWAYS" />
+    </columnConstraints>
+
+    <HBox spacing="12" GridPane.rowIndex="0" GridPane.columnIndex="0">
+      <VBox spacing="4" HBox.hgrow="ALWAYS">
+        <Label text="Modalidade" />
+        <ComboBox fx:id="modalidadeCombo" promptText="Escolha a modalidade" />
+      </VBox>
+    </HBox>
+
+  </GridPane>
+
+  <Label fx:id="titleLabel" text="" styleClass="form-status" />
+
+  <HBox spacing="8" alignment="CENTER_RIGHT">
+    <Button fx:id="btnCancel" text="Cancelar" />
+    <Button fx:id="btnSave" text="Sortear" />
+  </HBox>
+</VBox>

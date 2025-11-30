@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="dev.loteria.gui.controllers.ClienteFormController" spacing="8"
+  style="-fx-padding: 12;"
+  styleClass="view-root">
+
+  <GridPane hgap="8" vgap="8">
+    <columnConstraints>
+      <ColumnConstraints hgrow="ALWAYS" />
+    </columnConstraints>
+
+    <VBox spacing="4" GridPane.rowIndex="0" GridPane.columnIndex="0">
+      <Label text="Nome" />
+      <TextField fx:id="nomeField" maxWidth="Infinity" promptText="Nome completo" />
+    </VBox>
+
+    <HBox spacing="12" GridPane.rowIndex="1" GridPane.columnIndex="0">
+      <VBox spacing="4" HBox.hgrow="ALWAYS">
+        <Label text="E-mail" />
+        <TextField fx:id="emailField" maxWidth="Infinity" promptText="email@exemplo.com" />
+      </VBox>
+
+      <VBox spacing="4" HBox.hgrow="ALWAYS">
+        <Label text="Telefone" />
+        <TextField fx:id="telefoneField" maxWidth="Infinity" promptText="(00) 00000-0000" />
+      </VBox>
+    </HBox>
+
+    <HBox spacing="12" GridPane.rowIndex="2" GridPane.columnIndex="0">
+      <VBox spacing="4" HBox.hgrow="ALWAYS">
+        <Label text="CPF" />
+        <TextField fx:id="cpfField" maxWidth="Infinity" promptText="000.000.000-00" />
+      </VBox>
+
+      <VBox spacing="4" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+        <Label text="Status" />
+        <CheckBox fx:id="ativoCheck" text="Ativo" selected="true" />
+      </VBox>
+    </HBox>
+
+    <VBox spacing="4" GridPane.rowIndex="3" GridPane.columnIndex="0">
+      <Label text="Endereço" />
+      <TextField fx:id="enderecoField" maxWidth="Infinity" promptText="Rua, número, bairro" />
+    </VBox>
+  </GridPane>
+
+  <Label fx:id="titleLabel" text="" styleClass="form-status" />
+
+  <HBox spacing="8" alignment="CENTER_RIGHT">
+    <Button fx:id="btnCancel" text="Cancelar" />
+    <Button fx:id="btnSave" text="Salvar" />
+  </HBox>
+</VBox>

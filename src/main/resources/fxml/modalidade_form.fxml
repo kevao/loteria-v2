@@ -2,7 +2,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <VBox xmlns:fx="http://javafx.com/fxml/1"
-  fx:controller="dev.loteria.ui.gui.controllers.ModalidadeFormController" spacing="8"
+  fx:controller="dev.loteria.gui.controllers.ModalidadeFormController" spacing="8"
   style="-fx-padding: 12;"
   styleClass="view-root">
   <!-- O título da janela é definido pelo Stage; removido título duplicado aqui -->

@@ -2,8 +2,24 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <VBox xmlns:fx="http://javafx.com/fxml/1"
-    fx:controller="dev.loteria.ui.gui.controllers.SorteioController" spacing="10"
+    fx:controller="dev.loteria.gui.controllers.SorteioController" spacing="10"
     styleClass="view-root" style="-fx-padding: 10;">
-    <Label text="Sorteios" styleClass="view-title" />
-    <Label fx:id="lblInfo" text="Carregando..." />
+    <HBox alignment="CENTER_LEFT" spacing="8">
+        <HBox alignment="CENTER_LEFT" spacing="8">
+            <SVGPath content="M19 3H5c-1.1 0-2 .9-2 2v14l4-4h12c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
+                styleClass="view-icon" />
+            <Label text="Sorteios" styleClass="view-title" />
+        </HBox>
+        <Pane HBox.hgrow="ALWAYS" />
+        <Button fx:id="btnNovo" text="Novo Sorteio" styleClass="primary-btn" />
+    </HBox>
+
+    <TableView fx:id="tableView" prefHeight="500" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colModalidade" text="Modalidade" />
+            <TableColumn fx:id="colNumeros" text="Números" />
+            <TableColumn fx:id="colHorario" text="Horário" />
+            <TableColumn fx:id="colActions" text="" />
+        </columns>
+    </TableView>
 </VBox>

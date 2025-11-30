@@ -20,6 +20,15 @@ public class MainController {
     private Button btnSorteios;
 
     @FXML
+    private Button btnJogos;
+
+    @FXML
+    private Button btnClientes;
+
+    @FXML
+    private Button btnFuncionarios;
+
+    @FXML
     private AnchorPane content;
 
     @FXML
@@ -36,11 +45,26 @@ public class MainController {
             setActive(btnSorteios);
             loadCenter("/fxml/sorteios.fxml");
         });
+        btnJogos.setOnAction(e -> {
+            setActive(btnJogos);
+            loadCenter("/fxml/jogos.fxml");
+        });
+        btnClientes.setOnAction(e -> {
+            setActive(btnClientes);
+            loadCenter("/fxml/clientes.fxml");
+        });
+        btnFuncionarios.setOnAction(e -> {
+            setActive(btnFuncionarios);
+            loadCenter("/fxml/funcionarios.fxml");
+        });
     }
 
     private void setActive(Button active) {
         btnModalidades.getStyleClass().remove("active");
         btnSorteios.getStyleClass().remove("active");
+        btnJogos.getStyleClass().remove("active");
+        btnClientes.getStyleClass().remove("active");
+        btnFuncionarios.getStyleClass().remove("active");
         if (!active.getStyleClass().contains("active")) {
             active.getStyleClass().add("active");
         }

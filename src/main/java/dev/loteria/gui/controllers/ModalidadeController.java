@@ -102,8 +102,16 @@ public class ModalidadeController {
     btnNew.setPrefHeight(34);
     btnNew.setTooltip(new Tooltip("Criar nova modalidade"));
 
-    // Política de redimensionamento (mantive comportamento anterior)
-    tableModalidades.setColumnResizePolicy(javafx.scene.control.TableView.CONSTRAINED_RESIZE_POLICY);
+    // Larguras proporcionais (substitui uso de CONSTRAINED_RESIZE_POLICY)
+    // Aqui definimos proportions por coluna para manter comportamento previsível
+    // sem depender de API possivelmente deprecated. Ajuste percentuais conforme
+    // necessário.
+    colNome.prefWidthProperty().bind(tableModalidades.widthProperty().multiply(0.28));
+    colValor.prefWidthProperty().bind(tableModalidades.widthProperty().multiply(0.12));
+    colNumeros.prefWidthProperty().bind(tableModalidades.widthProperty().multiply(0.08));
+    colNumeracao.prefWidthProperty().bind(tableModalidades.widthProperty().multiply(0.12));
+    colDescricao.prefWidthProperty().bind(tableModalidades.widthProperty().multiply(0.30));
+    colActions.prefWidthProperty().bind(tableModalidades.widthProperty().multiply(0.10));
 
     // Larguras mínimas
     colNome.setMinWidth(160);
