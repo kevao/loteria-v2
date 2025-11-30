@@ -1,4 +1,4 @@
-package dev.loteria.ui.gui.controllers;
+package dev.loteria.gui.controllers;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

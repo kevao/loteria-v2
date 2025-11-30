@@ -9,6 +9,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * DAO para a entidade {@link dev.loteria.models.Sorteio}. Exponhe métodos
+ * para listar sorteios, inserir resultados e consultar histórico.
+ */
 public class SorteioDao implements CRUD<Sorteio> {
 
   private Connection conn;
@@ -16,8 +20,11 @@ public class SorteioDao implements CRUD<Sorteio> {
 
   public SorteioDao() {
     conn = Conexao.getConn();
-    criarTabela();
   }
+
+  /**
+   * Inicializa o DAO de sorteios usando a conexão compartilhada.
+   */
 
   /**
    * Retorna um ResultSet com todos os sorteios cadastrados.
@@ -33,27 +40,11 @@ public class SorteioDao implements CRUD<Sorteio> {
   }
 
   /**
-   * Cria a tabela de sorteios no banco de dados se ela não existir.
-   */
-  public void criarTabela() {
-    try {
-      String sql = """
-          CREATE TABLE IF NOT EXISTS sorteios (
-          id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-          modalidade_id UUID NOT NULL,
-          numeros_sorteados TEXT NOT NULL,
-          horario TIMESTAMP NOT NULL,
-          FOREIGN KEY (modalidade_id) REFERENCES modalidades(id)
-          );
-          """;
-      conn.createStatement().executeUpdate(sql);
-    } catch (SQLException e) {
-      System.out.println("Ocorreu um erro ao criar a tabela de sorteios.");
-    }
-  }
-
-  /*
-   * Insere um novo sorteio na tabela.
+   * Persiste um novo {@link Sorteio} na base. Após inserção, o campo `id`
+   * do objeto será preenchido com o UUID retornado pelo banco quando
+   * disponível.
+   *
+   * @param sorteio instância de {@link Sorteio} com dados do sorteio
    */
   public void inserir(Sorteio sorteio) {
     try {
@@ -76,12 +67,10 @@ public class SorteioDao implements CRUD<Sorteio> {
     }
   }
 
-  /*
-   * Deleta um sorteio pelo ID.
-   * Verifica se o ID existe antes de tentar deletar.
-   * 
-   * @param id ID do sorteio a ser deletado.
-   * Se o ID não existir, exibe uma mensagem de erro.
+  /**
+   * Remove um {@link Sorteio} identificado por `id`.
+   *
+   * @param id UUID do sorteio a ser removido
    */
   public void deletar(java.util.UUID id) {
     if (!checkId(id)) {
@@ -101,10 +90,10 @@ public class SorteioDao implements CRUD<Sorteio> {
     }
   }
 
-  /*
-   * Conta quantos sorteios existem na tabela.
-   * 
-   * @return O número de sorteios cadastrados.
+  /**
+   * Retorna o total de sorteios registrados na tabela `sorteios`.
+   *
+   * @return número total de sorteios (0 em caso de erro)
    */
   public int contar() {
     int count = 0;
@@ -145,6 +134,12 @@ public class SorteioDao implements CRUD<Sorteio> {
     }
   }
 
+  /**
+   * A edição de sorteios não é suportada — sorteios são registros irreversíveis
+   * do histórico.
+   *
+   * @param sorteio instância a ser editada (não utilizada)
+   */
   public void editar(Sorteio sorteio) {
     System.out.println("Não é possível editar um sorteio.");
   }

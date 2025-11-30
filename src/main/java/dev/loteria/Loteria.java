@@ -1,18 +1,27 @@
 package dev.loteria;
 
 import dev.loteria.database.Conexao;
-import dev.loteria.ui.gui.MainApp;
+import dev.loteria.database.Migrations;
+import dev.loteria.database.Seeds;
+import dev.loteria.gui.MainApp;
 
 /**
- * Classe principal — inicia a aplicação GUI.
+ * Classe principal da aplicação Loteria.
+ * 
+ * @author Kevin Villanova
  */
 public final class Loteria {
 
+  /**
+   * Inicializa a aplicação.
+   * 
+   * @param args
+   */
   public static void main(String[] args) {
-    // inicializa a conexão com o banco (DAOs usarão Conexao.getInstance() quando
-    // necessário)
+
     Conexao.getConn();
-    // inicia a aplicação JavaFX
+    Migrations.run();
+    Seeds.run();
     MainApp.main(args);
   }
 

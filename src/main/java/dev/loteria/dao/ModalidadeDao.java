@@ -9,6 +9,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * DAO responsável por operações de persistência para
+ * {@link dev.loteria.models.Modalidade}. Fornece métodos para inserir,
+ * editar, listar e recuperar modalidades.
+ */
 public class ModalidadeDao implements CRUD<Modalidade> {
 
   private Connection conn;
@@ -16,13 +21,17 @@ public class ModalidadeDao implements CRUD<Modalidade> {
 
   public ModalidadeDao() {
     conn = Conexao.getConn();
-    criarTabela();
-    criarMockups();
   }
 
   /**
-   * Retorna um ResultSet com todas as modalidades cadastradas.
-   * Se ocorrer um erro, exibe uma mensagem e retorna null.
+   * Constroi o DAO de Modalidade utilizando a conexão compartilhada.
+   */
+
+  /**
+   * Retorna todas as modalidades cadastradas como um {@link ResultSet}.
+   *
+   * @return {@link ResultSet} com todas as modalidades ou `null` em caso de
+   *         erro
    */
   public ResultSet listar() {
     try {
@@ -35,55 +44,18 @@ public class ModalidadeDao implements CRUD<Modalidade> {
   }
 
   /**
-   * Cria a tabela de modalidades no banco de dados se ela não existir.
+   * Método placeholder para compatibilidade com APIs que usam
+   * auto-increment. Não é necessário para chaves UUID.
    */
-  public void criarTabela() {
-    try {
-      // ensure uuid extension available
-      conn.createStatement().executeUpdate("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";");
-
-      String sql = """
-          CREATE TABLE IF NOT EXISTS modalidades (
-          id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-          nome VARCHAR(50) NOT NULL,
-          numeros_sorteio INT NOT NULL,
-          menor_bola INT NOT NULL,
-          maior_bola INT NOT NULL,
-          valor_jogo DOUBLE PRECISION NOT NULL,
-          descricao VARCHAR(255) NOT NULL
-          );
-          """;
-
-      conn.createStatement().executeUpdate(sql);
-    } catch (SQLException e) {
-      System.out.println("Ocorreu um erro ao criar a tabela de modalidades.");
-    }
-  }
-
-  /*
-   * Cria mockups de modalidades se a tabela estiver vazia.
-   * Inicia com modalidades populares como Mega-Sena, Quina, Lotofácil e
-   * Lotomania.
-   */
-  public void criarMockups() {
-    if (contar() != 0)
-      return;
-    System.out.println("Criando mockups de modalidades...");
-
-    inserir(new Modalidade("Mega-Sena", 6, 1, 60, 6.0, "O jogo mais famoso do Brasil."));
-    inserir(new Modalidade("Quina", 5, 1, 80, 4.5, "Jogo popular com sorteio de 5 números."));
-    inserir(new Modalidade("Lotofácil", 15, 1, 25, 5.0, "Fácil de jogar, fácil de ganhar."));
-    inserir(new Modalidade("Lotomania", 20, 0, 99, 2.5, "Jogo com 20 números sorteados entre 0 e 99."));
-  }
-
   public void resetarAutoIncrement() {
     // not needed for UUID primary keys
   }
 
-  /*
-   * Insere uma nova modalidade na tabela.
-   * Antes de inserir, reseta o AUTO_INCREMENT para garantir que o ID pegue sempre
-   * o próximo número.
+  /**
+   * Insere uma nova {@link Modalidade} na base de dados. Após a inserção, o
+   * campo `id` do objeto será preenchido com o UUID retornado pelo banco.
+   *
+   * @param modalidade instância a ser persistida
    */
   public void inserir(Modalidade modalidade) {
     try {
@@ -113,9 +85,11 @@ public class ModalidadeDao implements CRUD<Modalidade> {
     }
   }
 
-  /*
-   * Edita uma modalidade existente.
-   * Verifica se o ID existe antes de tentar editar.
+  /**
+   * Atualiza os dados de uma {@link Modalidade} existente. Se o ID não for
+   * encontrado a operação é abortada.
+   *
+   * @param modalidade instância com ID e novos valores
    */
   public void editar(Modalidade modalidade) {
 
@@ -146,12 +120,10 @@ public class ModalidadeDao implements CRUD<Modalidade> {
     }
   }
 
-  /*
-   * Deleta uma modalidade pelo ID.
-   * Verifica se o ID existe antes de tentar deletar.
-   * Se existir, deleta e atualiza os IDs das modalidades restantes.
-   * Se não existir, exibe uma mensagem informando que a modalidade não foi
-   * encontrada.
+  /**
+   * Remove a {@link Modalidade} identificada por `id` da base.
+   *
+   * @param id UUID da modalidade a ser removida
    */
   public void deletar(java.util.UUID id) {
 
@@ -172,9 +144,10 @@ public class ModalidadeDao implements CRUD<Modalidade> {
     }
   }
 
-  /*
-   * Conta quantas modalidades existem na tabela.
-   * Se ocorrer um erro, exibe uma mensagem e retorna 0.
+  /**
+   * Retorna a contagem de registros na tabela `modalidades`.
+   *
+   * @return número total de modalidades (0 em caso de erro)
    */
   public int contar() {
     int count = 0;
@@ -193,15 +166,11 @@ public class ModalidadeDao implements CRUD<Modalidade> {
     return count;
   }
 
-  /*
-   * Verifica se uma modalidade com o ID fornecido existe.
-   * Se não existir, exibe uma mensagem informando que a modalidade não foi
-   * encontrada.
-   * 
-   * @param id ID da modalidade a ser verificado.
-   * 
-   * @return true se o ID existir, false caso contrário.
-   * 
+  /**
+   * Verifica a existência de uma {@link Modalidade} pelo seu UUID.
+   *
+   * @param id UUID a ser verificado
+   * @return `true` se existir, `false` caso contrário
    */
   public boolean checkId(java.util.UUID id) {
     try {
@@ -220,9 +189,10 @@ public class ModalidadeDao implements CRUD<Modalidade> {
   }
 
   /**
-   * Busca uma modalidade pelo ID.
-   * Se o ID não existir, exibe uma mensagem informando que a modalidade não foi
-   * encontrada.
+   * Recupera uma {@link Modalidade} pelo seu UUID.
+   *
+   * @param id UUID da modalidade
+   * @return {@link Modalidade} encontrada ou `null` se não existir/ocorrer erro
    */
   public Modalidade getById(java.util.UUID id) {
     if (!checkId(id)) {

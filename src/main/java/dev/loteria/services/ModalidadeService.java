@@ -1,130 +1,125 @@
 package dev.loteria.services;
 
-import java.sql.ResultSet;
-
-import de.vandermeer.asciitable.AsciiTable;
-import de.vandermeer.asciitable.CWC_LongestLine;
 import dev.loteria.dao.ModalidadeDao;
-import dev.loteria.interfaces.Servico;
 import dev.loteria.models.Modalidade;
 
-public class ModalidadeService implements Servico {
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
-  ModalidadeDao modalidadeDao;
+/**
+ * Serviço que orquestra regras de negócio relacionadas a {@link Modalidade}.
+ * Métodos puros que delegam para o DAO, sem lógica de apresentação
+ * (IO/console).
+ * 
+ * @author Kevin Villanova
+ */
+public class ModalidadeService {
 
+  private final ModalidadeDao modalidadeDao;
+
+  /**
+   * Construtor padrão que inicializa o DAO.
+   */
   public ModalidadeService() {
-    modalidadeDao = new ModalidadeDao();
+    this.modalidadeDao = new ModalidadeDao();
   }
 
-  public void listar() {
-    ResultSet rs = modalidadeDao.listar();
-    AsciiTable at = new AsciiTable();
-
-    String[] colunas = { "ID", "Nome", "Números\nno Sorteio", "Menor\nBola", "Maior\nBola", "Valor\ndo Jogo",
-        "Descrição" };
-
-    at.addRule();
-    at.addRow((Object[]) colunas);
-    at.addRule();
-
+  /**
+   * Retorna uma lista de todas as modalidades cadastradas.
+   *
+   * @return lista de {@link Modalidade} ou lista vazia em caso de erro
+   */
+  public List<Modalidade> listarTodas() {
+    List<Modalidade> modalidades = new ArrayList<>();
     try {
+      ResultSet rs = modalidadeDao.listar();
       while (rs != null && rs.next()) {
-        String[] linha = { rs.getString("id"), rs.getString("nome"), rs.getString("numeros_sorteio"),
-            rs.getString("menor_bola"), rs.getString("maior_bola"), String.format("%.2f", rs.getDouble("valor_jogo")),
-            rs.getString("descricao") };
-        at.addRow((Object[]) linha);
-        at.addRule();
+        Modalidade m = new Modalidade(
+            rs.getObject("id", java.util.UUID.class),
+            rs.getString("nome"),
+            rs.getInt("numeros_sorteio"),
+            rs.getInt("menor_bola"),
+            rs.getInt("maior_bola"),
+            rs.getDouble("valor_jogo"),
+            rs.getString("descricao"));
+        modalidades.add(m);
       }
-      if (rs != null) {
+      if (rs != null)
         rs.close();
-      }
-    } catch (Exception e) {
-      System.out.println("Erro ao listar modalidades.");
+    } catch (SQLException e) {
+      System.err.println("Erro ao listar modalidades: " + e.getMessage());
     }
-
-    CWC_LongestLine larguraColunas = new CWC_LongestLine();
-
-    at.getRenderer().setCWC(larguraColunas);
-
-    System.out.println(at.render());
-
-    System.out.print("Aperte Enter para retornar ao menu: ");
-    System.console().readLine();
-    retornarMenu();
+    return modalidades;
   }
 
-  public void inserir() {
-    try {
-      System.out.print("Nome da modalidade: ");
-      String nome = System.console().readLine();
-
-      System.out.print("Quantidade de números no sorteio: ");
-      int numerosSorteio = Integer.parseInt(System.console().readLine());
-
-      System.out.print("Menor número possível: ");
-      int menorBola = Integer.parseInt(System.console().readLine());
-
-      System.out.print("Maior número possível: ");
-      int maiorBola = Integer.parseInt(System.console().readLine());
-
-      System.out.print("Valor do jogo: ");
-      double valorJogo = Double.parseDouble(System.console().readLine());
-
-      System.out.print("Descrição: ");
-      String descricao = System.console().readLine();
-
-      Modalidade modalidade = new Modalidade(nome, numerosSorteio, menorBola, maiorBola, valorJogo, descricao);
-      modalidadeDao.inserir(modalidade);
-    } catch (Exception e) {
-      System.out.println("Erro ao inserir modalidade. Verifique os dados informados.");
-    }
-    retornarMenu();
+  /**
+   * Insere uma nova modalidade no banco de dados.
+   *
+   * @param modalidade instância a ser persistida
+   * @throws IllegalArgumentException se a modalidade for inválida
+   */
+  public void inserir(Modalidade modalidade) {
+    validarModalidade(modalidade);
+    modalidadeDao.inserir(modalidade);
   }
 
-  public void editar() {
-    try {
-      System.out.print("ID da modalidade a ser editada: ");
-      java.util.UUID id = java.util.UUID.fromString(System.console().readLine());
-
-      System.out.print("Novo nome da modalidade: ");
-      String nome = System.console().readLine();
-
-      System.out.print("Nova quantidade de números no sorteio: ");
-      int numerosSorteio = Integer.parseInt(System.console().readLine());
-
-      System.out.print("Novo menor número possível: ");
-      int menorBola = Integer.parseInt(System.console().readLine());
-
-      System.out.print("Novo maior número possível: ");
-      int maiorBola = Integer.parseInt(System.console().readLine());
-
-      System.out.print("Novo valor do jogo: ");
-      double valorJogo = Double.parseDouble(System.console().readLine());
-
-      System.out.print("Nova descrição: ");
-      String descricao = System.console().readLine();
-
-      Modalidade modalidade = new Modalidade(id, nome, numerosSorteio, menorBola, maiorBola, valorJogo, descricao);
-      modalidadeDao.editar(modalidade);
-    } catch (Exception e) {
-      System.out.println("Erro ao editar modalidade. Verifique os dados informados.");
+  /**
+   * Atualiza uma modalidade existente.
+   *
+   * @param modalidade instância com ID e novos valores
+   * @throws IllegalArgumentException se a modalidade for inválida ou ID nulo
+   */
+  public void editar(Modalidade modalidade) {
+    if (modalidade.getId() == null) {
+      throw new IllegalArgumentException("ID da modalidade não pode ser nulo.");
     }
-    retornarMenu();
+    validarModalidade(modalidade);
+    modalidadeDao.editar(modalidade);
   }
 
-  public void deletar() {
-    try {
-      System.out.print("ID da modalidade a ser deletada: ");
-      java.util.UUID id = java.util.UUID.fromString(System.console().readLine());
-      modalidadeDao.deletar(id);
-      System.out.println("Modalidade deletada com sucesso!");
-    } catch (Exception e) {
-      System.out.println("Erro ao deletar modalidade. Verifique o ID informado.");
+  /**
+   * Remove uma modalidade pelo seu UUID.
+   *
+   * @param id UUID da modalidade a ser removida
+   * @throws IllegalArgumentException se o ID for nulo
+   */
+  public void deletar(java.util.UUID id) {
+    if (id == null) {
+      throw new IllegalArgumentException("ID não pode ser nulo.");
     }
-    retornarMenu();
+    modalidadeDao.deletar(id);
   }
 
-  public void retornarMenu() {
-    // Console UI removed. GUI handles navigation — no-op here.
+  /**
+   * Busca uma modalidade pelo UUID.
+   *
+   * @param id UUID da modalidade
+   * @return {@link Modalidade} ou null se não existir
+   */
+  public Modalidade buscarPorId(java.util.UUID id) {
+    return modalidadeDao.getById(id);
+  }
+
+  /**
+   * Valida os campos obrigatórios e regras de negócio de uma modalidade.
+   *
+   * @param modalidade instância a validar
+   * @throws IllegalArgumentException se houver erro de validação
+   */
+  private void validarModalidade(Modalidade modalidade) {
+    if (modalidade.getNome() == null || modalidade.getNome().trim().isEmpty()) {
+      throw new IllegalArgumentException("Nome da modalidade é obrigatório.");
+    }
+    if (modalidade.getNumerosSorteio() < 1) {
+      throw new IllegalArgumentException("Quantidade de números no sorteio deve ser >= 1.");
+    }
+    if (modalidade.getMenorBola() >= modalidade.getMaiorBola()) {
+      throw new IllegalArgumentException("Menor bola deve ser menor que maior bola.");
+    }
+    if (modalidade.getValorJogo() <= 0) {
+      throw new IllegalArgumentException("Valor do jogo deve ser positivo.");
+    }
   }
 }

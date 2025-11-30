@@ -4,6 +4,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * Classe singleton responsável por gerenciar a conexão com o banco de dados
+ * PostgreSQL.
+ * 
+ * @author Kevin Villanova
+ */
 public final class Conexao {
 
   private static final String URL = "jdbc:postgresql://localhost:5442/loteria";
@@ -21,12 +27,25 @@ public final class Conexao {
     }
   }
 
+  /**
+   * Retorna a instância singleton da classe.
+   */
   private static Conexao getInstance() {
     return INSTANCE;
   }
 
+  /**
+   * Retorna a conexão montada com o banco de dados.
+   * 
+   * @return Conexão JDBC
+   */
   public static Connection getConn() {
     return getInstance().conn;
   }
+
+  /**
+   * Fecha a conexão subjacente — atualmente não exposto publicamente.
+   * Método reservado para uso futuro se necessário.
+   */
 
 }

@@ -1,4 +1,4 @@
-package dev.loteria.ui.gui.controllers;
+package dev.loteria.gui.controllers;
 
 import dev.loteria.dao.SorteioDao;
 import javafx.fxml.FXML;

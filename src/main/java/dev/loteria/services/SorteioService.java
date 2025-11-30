@@ -1,98 +1,136 @@
 package dev.loteria.services;
 
-import java.sql.ResultSet;
-
-import de.vandermeer.asciitable.AsciiTable;
-import de.vandermeer.asciitable.CWC_LongestLine;
 import dev.loteria.dao.ModalidadeDao;
 import dev.loteria.dao.SorteioDao;
-import dev.loteria.interfaces.Servico;
 import dev.loteria.models.Modalidade;
 import dev.loteria.models.Sorteio;
 
-public class SorteioService implements Servico {
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-  SorteioDao sorteioDao;
-  ModalidadeDao modalidadeDao = new ModalidadeDao();
+/**
+ * Serviço responsável por operações de negócio relacionadas a sorteios
+ * (criação, listagem e validações relacionadas aos resultados).
+ * Métodos puros sem lógica de apresentação.
+ */
+public class SorteioService {
 
+  private final SorteioDao sorteioDao;
+  private final ModalidadeDao modalidadeDao;
+
+  /**
+   * Construtor padrão que inicializa os DAOs.
+   */
   public SorteioService() {
-    sorteioDao = new SorteioDao();
+    this.sorteioDao = new SorteioDao();
+    this.modalidadeDao = new ModalidadeDao();
   }
 
-  public void listar() {
-    ResultSet rs = sorteioDao.listar();
-    AsciiTable at = new AsciiTable();
-
-    String[] colunas = { "ID", "Modalidade", "Números", "Data/Hora" };
-
-    at.addRule();
-    at.addRow((Object[]) colunas);
-    at.addRule();
-
+  /**
+   * Retorna todos os sorteios registrados como objetos {@link Sorteio}.
+   * Para exibir na GUI será necessário mapear campos adicionais (ex.: nome
+   * modalidade).
+   *
+   * @return lista de sorteios ou lista vazia em caso de erro
+   */
+  public List<SorteioDTO> listarTodos() {
+    List<SorteioDTO> sorteios = new ArrayList<>();
     try {
+      ResultSet rs = sorteioDao.listar();
       while (rs != null && rs.next()) {
-        String[] linha = new String[colunas.length];
-        for (int i = 0; i < colunas.length; i++) {
-          linha[i] = rs.getString(i + 1);
-        }
-        at.addRow((Object[]) linha);
-        at.addRule();
+        java.util.UUID id = rs.getObject("id", java.util.UUID.class);
+        String nomeModalidade = rs.getString("nome");
+        String numerosText = rs.getString("numeros_sorteados");
+        Timestamp ts = rs.getTimestamp("horario");
+        LocalDateTime horario = ts != null ? ts.toLocalDateTime() : null;
+
+        Set<Integer> numeros = Arrays.stream(numerosText.split("-"))
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .map(Integer::parseInt)
+            .collect(Collectors.toSet());
+
+        SorteioDTO dto = new SorteioDTO(id, nomeModalidade, numeros, horario);
+        sorteios.add(dto);
       }
-      if (rs != null) {
+      if (rs != null)
         rs.close();
-      }
-    } catch (Exception e) {
-      System.out.println("Erro ao listar sorteios.");
+    } catch (SQLException e) {
+      System.err.println("Erro ao listar sorteios: " + e.getMessage());
+    }
+    return sorteios;
+  }
+
+  /**
+   * Cria e persiste um novo sorteio para a modalidade informada.
+   *
+   * @param modalidadeId UUID da modalidade
+   * @return o {@link Sorteio} criado ou null se a modalidade não existir
+   * @throws IllegalArgumentException se o ID for nulo
+   */
+  public Sorteio inserir(java.util.UUID modalidadeId) {
+    if (modalidadeId == null) {
+      throw new IllegalArgumentException("ID da modalidade não pode ser nulo.");
+    }
+    Modalidade modalidade = modalidadeDao.getById(modalidadeId);
+    if (modalidade == null) {
+      throw new IllegalArgumentException("Modalidade não encontrada.");
+    }
+    Sorteio sorteio = new Sorteio(modalidade);
+    sorteioDao.inserir(sorteio);
+    return sorteio;
+  }
+
+  /**
+   * Remove um sorteio pelo UUID.
+   *
+   * @param id UUID do sorteio
+   * @throws IllegalArgumentException se o ID for nulo
+   */
+  public void deletar(java.util.UUID id) {
+    if (id == null) {
+      throw new IllegalArgumentException("ID não pode ser nulo.");
+    }
+    sorteioDao.deletar(id);
+  }
+
+  /**
+   * DTO para transferência de dados de sorteio para a camada de apresentação.
+   */
+  public static class SorteioDTO {
+    private final java.util.UUID id;
+    private final String nomeModalidade;
+    private final Set<Integer> numeros;
+    private final LocalDateTime horario;
+
+    public SorteioDTO(java.util.UUID id, String nomeModalidade, Set<Integer> numeros, LocalDateTime horario) {
+      this.id = id;
+      this.nomeModalidade = nomeModalidade;
+      this.numeros = numeros;
+      this.horario = horario;
     }
 
-    CWC_LongestLine larguraColunas = new CWC_LongestLine();
-
-    at.getRenderer().setCWC(larguraColunas);
-
-    System.out.println(at.render());
-
-    System.out.print("Aperte Enter para retornar ao menu: ");
-    System.console().readLine();
-    retornarMenu();
-  }
-
-  public void inserir() {
-    try {
-      System.out.print("ID da modalidade para o sorteio: ");
-      java.util.UUID modalidadeId = java.util.UUID.fromString(System.console().readLine());
-
-      Modalidade modalidade = modalidadeDao.getById(modalidadeId);
-      if (modalidade == null) {
-        System.out.println("Modalidade não encontrada.");
-        retornarMenu();
-        return;
-      }
-
-      Sorteio sorteio = new Sorteio(modalidade);
-      sorteioDao.inserir(sorteio);
-    } catch (Exception e) {
-      System.out.println("Erro ao inserir sorteio. Verifique os dados informados.");
+    public java.util.UUID getId() {
+      return id;
     }
-    retornarMenu();
-  }
 
-  public void editar() {
-    System.out.println("Não é possível editar um sorteio.");
-    retornarMenu();
-  }
-
-  public void deletar() {
-    try {
-      System.out.print("ID do sorteio a ser deletado: ");
-      java.util.UUID id = java.util.UUID.fromString(System.console().readLine());
-      sorteioDao.deletar(id);
-    } catch (Exception e) {
-      System.out.println("Erro ao deletar sorteio. Verifique o ID informado.");
+    public String getNomeModalidade() {
+      return nomeModalidade;
     }
-    retornarMenu();
-  }
 
-  public void retornarMenu() {
-    // Console UI removed. GUI handles navigation — no-op here.
+    public Set<Integer> getNumeros() {
+      return numeros;
+    }
+
+    public LocalDateTime getHorario() {
+      return horario;
+    }
   }
 }
